@@ -1,0 +1,6 @@
+get.Pcent               Polygon centroids
+Map2poly                Create polygon lists and bounding boxes from
+                        imported shapefiles
+plot.Map                Plot a Map object
+plotpolys               Plot polygons
+read.shape              Read shapefile into Map object
