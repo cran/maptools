@@ -25,8 +25,8 @@ subset.polylist(x, subset, fit.bbox = TRUE)
 nc <- read.shape(system.file("shapes/sids.shp", package = "maptools")[1])
 mappolys <- Map2poly(nc, as.character(nc$att.data$FIPSNO))
 submap <- subset(mappolys, nc$att.data$SID74 > 0)
-plotpolys(mappolys, col="pink")
-plotpolys(submap, add=TRUE, col="white")
+plot(mappolys, col="pink")
+plot(submap, add=TRUE, col="white")
 }
 \keyword{spatial}
 

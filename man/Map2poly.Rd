@@ -15,7 +15,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Create polygon lists and bounding boxes from imported shapefiles}
 \description{
-  Map2poly() is a simple function to make imported GIS vector polygons into a "polylist" object from a "Map" object, and Map2bbs() retrieves polygon bounding boxes; analogous functions for the "shapefiles" package are shape2poly() and shape2bbs() (thanks to Stéphane Dray for his contribution); convert.pl() serves to convert the deprecated "multipart" "polylist" format to an NA-separated format now used by plotpolys() and poly2nb(). 
+  Map2poly() is a simple function to make imported GIS vector polygons into a "polylist" object from a "Map" object, and Map2bbs() retrieves polygon bounding boxes; analogous functions for the "shapefiles" package are shape2poly() and shape2bbs() (thanks to Stéphane Dray for his contribution); convert.pl() serves to convert the deprecated "multipart" "polylist" format to an NA-separated format now used by plot() for polylist objects and poly2nb(). 
 %\code{ringDir()} attempts to find out whether polygon ring 
 %coordinates run clockwise (external boundary of polygon object), or 
 %anti-clockwise (internal boundary - hole). 
@@ -66,7 +66,7 @@ if (class(shp) != "try-error") {
   ShapeDir <- system.file("shapes", package="maptools")[1]
   try1 <- read.shapefile(paste(ShapeDir, "columbus", sep="/"))
   shppolys <- shape2poly(try1, as.character(try1$dbf$dbf$NEIGNO))
-  plotpolys(shppolys)
+  plot(shppolys)
   title(main="Polygons for Columbus OH from shapefiles package")
   try3a <- read.shapefile(paste(ShapeDir, "baltim", sep="/"))
   baltptsa <- shape2points(try3a)
@@ -84,11 +84,11 @@ if (class(shp) != "try-error") {
 try2 <- read.shape(system.file("shapes/columbus.shp", 
   package="maptools")[1])
 mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO))
-plotpolys(mappolys)
+plot(mappolys)
 title(main="Polygons for Columbus OH from maptools package")
 if (class(shp) != "try-error") {
-  plotpolys(shppolys)
-  plotpolys(mappolys, add=TRUE, border="red", lty="dotted")
+  plot(shppolys)
+  plot(mappolys, add=TRUE, border="red", lty="dotted")
   title(main="Polygons for Columbus OH overplotted from both packages")
 }
 try3 <- read.shape(system.file("shapes/baltim.shp", package="maptools")[1])
