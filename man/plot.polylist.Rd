@@ -9,7 +9,8 @@
 A helper function for plotting polygons in a global bounding box. \code{findInterval2} is a modified version of \code{findInterval2} that permits the vector of break points to start at -Inf and/or finish at Inf. \code{leglabs} makes character strings from the same break points. The \code{plot.polylist()} function may be used as a generic S3 method. NOTE! \code{plotpolys()} DEPRECATED: use generic plot() for polylist objects function instead.
 }
 \usage{
-plot.polylist(x, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
+plot.polylist(x, col, border = par("fg"), add = FALSE, xlim=NULL,
+ ylim=NULL, xpd = NULL, density = NULL, angle = 45, ...)
 leglabs(vec, under="under", over="over", between="-")
 findInterval2(y, vec, rightmost.closed = FALSE, all.inside = TRUE)
 plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
@@ -22,7 +23,10 @@ plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
   \item{border}{the color to draw the border}
   \item{add}{add to existing plot}
   \item{xlim, ylim}{numeric of length 2, giving the x and y coordinates ranges}
-  \item{...}{other arguments passed to polygon}
+  \item{xpd}{(where) should clipping take place?}
+  \item{density}{the density of shading lines, in lines per inch}
+  \item{angle}{the slope of shading lines, given as an angle in degrees (counter-clockwise)}
+  \item{...}{other arguments passed to plot to set the plot window - not passed to polygon}
   \item{vec}{vector of break values}
   \item{under}{character value for under}
   \item{over}{character value for over}
@@ -52,5 +56,6 @@ np <- integer(length(mappolys))
 for (i in 1:length(mappolys)) np[i] <- attr(mappolys[[i]], "nPart")
 plot(mappolys, col=cols[np])
 title(main="White: one part, orange: two part, red: three part polygons")
+plot(mappolys, density=c(10, 20, 30)[np], angle=c(-45, 0, 45)[np], axes=FALSE)
 }
 \keyword{spatial}
