@@ -1,3 +1,4 @@
+/* Copyright (c) 2000-2004, Nicholas J. Lewin-Koh and Roger Bivand */
 
 /*
   Opens an ESRI shape file and reads the information into a shapelist
@@ -5,7 +6,9 @@
 */
 
 #include "maptools.h"
-#include <R_ext/PrtUtil.h>
+#include <R.h>
+#include <Rdefines.h>
+/* #include <R_ext/PrtUtil.h> */
 
 /*#define DEBUG 1*/
 SEXP Rshapeget(SEXP);
@@ -91,17 +94,18 @@ SEXP Rshapeget(SEXP shpnm)
 	Skim over the list of shapes, printing all the vertices.	
  --------------------------------------------------------------------*/
 
-   PROTECT(shplistnms = allocVector(STRSXP,6)); pc++;
+   PROTECT(shplistnms = allocVector(STRSXP,7)); pc++;
    SET_STRING_ELT(shplistnms,0,mkChar("Pstart"));
    SET_STRING_ELT(shplistnms,1,mkChar("verts")); 
    SET_STRING_ELT(shplistnms,2,mkChar("shp.type")); 
    SET_STRING_ELT(shplistnms,3,mkChar("nVerts")); 
    SET_STRING_ELT(shplistnms,4,mkChar("nParts")); 
-   SET_STRING_ELT(shplistnms,5,mkChar("bbox")); 
+   SET_STRING_ELT(shplistnms,5,mkChar("bbox"));
+   SET_STRING_ELT(shplistnms,6,mkChar("shpID"));
    for( i = 0; i < nEntities; i++ ) 
      { 
 	psShape = SHPReadObject( hSHP, i);
-        SET_VECTOR_ELT(Rshplst, i, allocVector(VECSXP, 6));
+        SET_VECTOR_ELT(Rshplst, i, allocVector(VECSXP, 7));
         SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),0, 
 	  allocVector(INTSXP,psShape->nParts));	
         SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),1,
@@ -114,9 +118,12 @@ SEXP Rshapeget(SEXP shpnm)
 		allocVector(INTSXP,1));
         SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),5,
 		allocVector(REALSXP,4));
+        SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),6,
+		allocVector(INTSXP,1));
 	INTEGER(VECTOR_ELT(VECTOR_ELT(Rshplst,i),2))[0]=psShape->nSHPType;
 	INTEGER(VECTOR_ELT(VECTOR_ELT(Rshplst,i),3))[0]=psShape->nVertices;
 	INTEGER(VECTOR_ELT(VECTOR_ELT(Rshplst,i),4))[0]=psShape->nParts;
+	INTEGER(VECTOR_ELT(VECTOR_ELT(Rshplst,i),6))[0]=psShape->nShapeId;
 
 
 	REAL(VECTOR_ELT(VECTOR_ELT(Rshplst,i),5))[0]=psShape->dfXMin;

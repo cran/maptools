@@ -66,7 +66,7 @@ static char rcsid[] =
 #include "shapefil.h"
 
 #include <math.h>
-#include <assert.h>
+/* #include <assert.h> RSB 2004-10-18 */
 #include <stdlib.h>
 #include <string.h>
 

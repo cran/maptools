@@ -168,9 +168,12 @@ static char rcsid[] =
 
 #include <math.h>
 #include <limits.h>
-#include <assert.h>
+/* #include <assert.h> RSB 2004-10-18 */
 #include <stdlib.h>
 #include <string.h>
+
+#include <R.h>
+#include <Rdefines.h> /* RSB 2004-10-18 */
 
 typedef unsigned char uchar;
 
@@ -870,9 +873,11 @@ SHPCreateObject( int nSHPType, int nShapeId, int nParts,
         psObject->padfZ = (double *) calloc(sizeof(double),nVertices);
         psObject->padfM = (double *) calloc(sizeof(double),nVertices);
 
-        assert( padfX != NULL );
-        assert( padfY != NULL );
-    
+       /* assert( padfX != NULL );RSB 2004-10-18 */
+        if (!(padfX != NULL)) error("Error allocating coordinate memory");
+       /* assert( padfY != NULL ); RSB 2004-10-18 */
+        if (!(padfY != NULL)) error("Error allocating coordinate memory");
+
         for( i = 0; i < nVertices; i++ )
         {
             psObject->padfX[i] = padfX[i];
@@ -931,16 +936,22 @@ SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject )
 /*      Ensure that shape object matches the type of the file it is     */
 /*      being written to.                                               */
 /* -------------------------------------------------------------------- */
-    assert( psObject->nSHPType == psSHP->nShapeType 
-            || psObject->nSHPType == SHPT_NULL );
+    /*assert( psObject->nSHPType == psSHP->nShapeType 
+            || psObject->nSHPType == SHPT_NULL );RSB 2004-10-18 */
+        if (!( psObject->nSHPType == psSHP->nShapeType 
+            || psObject->nSHPType == SHPT_NULL )) 
+            error("Mismatch of object and file types");
 
 /* -------------------------------------------------------------------- */
 /*      Ensure that -1 is used for appends.  Either blow an             */
 /*      assertion, or if they are disabled, set the shapeid to -1       */
 /*      for appends.                                                    */
 /* -------------------------------------------------------------------- */
-    assert( nShapeId == -1 
-            || (nShapeId >= 0 && nShapeId < psSHP->nRecords) );
+    /*assert( nShapeId == -1 
+            || (nShapeId >= 0 && nShapeId < psSHP->nRecords) );RSB 2004-10-18 */
+        if (!( nShapeId == -1 
+            || (nShapeId >= 0 && nShapeId < psSHP->nRecords) )) 
+            error("Mismatch of Shape ID numbers");
 
     if( nShapeId != -1 && nShapeId >= psSHP->nRecords )
         nShapeId = -1;
@@ -1192,7 +1203,8 @@ SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject )
     else
     {
         /* unknown type */
-        assert( FALSE );
+        /*assert( FALSE );RSB 2004-10-18 */
+        error("unknown type");
     }
 
 /* -------------------------------------------------------------------- */

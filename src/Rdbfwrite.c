@@ -40,7 +40,7 @@
 #include <Rmath.h>
 
 
-DBFHandle Rdbfwrite(DBFHandle, SEXP, int);
+DBFHandle Rdbfwrite(DBFHandle, SEXP, SEXP, SEXP);
 
 static char* nameMangleOut(char *dbfFldname, int len){
     int i;
@@ -84,7 +84,7 @@ static double findMaxReal(SEXP realvec){
 
 SEXP DoWritedbf(SEXP call)
 { 
-    SEXP fname,  df, precision;
+    SEXP fname,  df, precision, scale;
     DBFHandle hDBF;
 
     if (!isValidString(fname = CADR(call)))
@@ -98,19 +98,23 @@ SEXP DoWritedbf(SEXP call)
     if (!inherits(df,"data.frame"))
         error("data to be saved must be in a data frame.");
     
+/*    precision=CADDDR(call);
+    Rdbfwrite(hDBF,df,INTEGER(precision)[0]); */
     precision=CADDDR(call);
-    Rdbfwrite(hDBF,df,INTEGER(precision)[0]);
+    scale=CAD4R(call);
+    Rdbfwrite(hDBF,df,precision,scale);
     DBFClose( hDBF ); 
     return R_NilValue;
 }
 
 
-DBFHandle Rdbfwrite(DBFHandle hDBF, SEXP df, int pr)
+/* DBFHandle Rdbfwrite(DBFHandle hDBF, SEXP df, int pr)*/
+DBFHandle Rdbfwrite(DBFHandle hDBF, SEXP df, SEXP pr, SEXP sc)
 {
     
     int		i, iRecord, nflds, nrecs;
-    int		nWidth, nDecimals=0, maxi;
-    double      maxr;
+    int		nWidth, nDecimals=0/*, maxi*/;
+/*    double      maxr;*/
     char	szTitle[12];
     SEXP        names;
 
@@ -121,26 +125,33 @@ DBFHandle Rdbfwrite(DBFHandle hDBF, SEXP df, int pr)
 
       strncpy(szTitle,CHAR(STRING_ELT(names,i)),11);
       switch(TYPEOF(VECTOR_ELT(df,i))){
-        case LGLSXP:
+/*        case LGLSXP: */
         case INTSXP:
-	  maxi = findMaxInt(VECTOR_ELT(df,i));
+/*	  maxi = findMaxInt(VECTOR_ELT(df,i));
 	  if(maxi==0) maxi=1;
 	  nWidth=ceil(log1p((double)maxi));
-	  if(strlen(szTitle) > nWidth) nWidth = strlen(szTitle);
+	  if(strlen(szTitle) > nWidth) nWidth = strlen(szTitle); */
+	  nWidth = INTEGER(pr)[i];
+/* Rprintf("szTitle: %s, nWidth: %d\n", szTitle, nWidth); */
 	  DBFAddField(hDBF,nameMangleOut(szTitle,11),FTInteger,nWidth,0);
 	  break;
 	case REALSXP:
-	  maxr = findMaxReal(VECTOR_ELT(df,i));
+/*	  maxr = findMaxReal(VECTOR_ELT(df,i));
 	  if(maxr==0.0) maxr=1.0;
 	  nWidth=ceil(log1p(maxr));
 	  if(strlen(szTitle) > nWidth) nWidth = strlen(szTitle);
-	  if(pr > -1) nDecimals = pr;
+	  if(pr > -1) nDecimals = pr; */
+	  nWidth = INTEGER(pr)[i];
+	  nDecimals = INTEGER(sc)[i];
+/* Rprintf("szTitle: %s, nWidth: %d, nDecimals: %d\n", szTitle, nWidth, nDecimals); */
 	  DBFAddField(hDBF,nameMangleOut(szTitle,11),FTDouble,nWidth,
 		      nDecimals);
 	  break;
         case STRSXP:
-	  nWidth = findMaxString(VECTOR_ELT(df,i));
-	  if(strlen(szTitle) > nWidth) nWidth = strlen(szTitle);
+/*	  nWidth = findMaxString(VECTOR_ELT(df,i));
+	  if(strlen(szTitle) > nWidth) nWidth = strlen(szTitle); */
+	  nWidth = INTEGER(pr)[i];
+/* Rprintf("szTitle: %s, nWidth: %d\n", szTitle, nWidth); */
 	  DBFAddField(hDBF,nameMangleOut(szTitle,11),FTString,nWidth,0);
 	  break;
 	default:

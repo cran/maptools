@@ -1,7 +1,7 @@
 \name{read.shape}
 \alias{read.shape}
-%\alias{dbf.read}
 \alias{getinfo.shape}
+\alias{print.shapehead}
 
 \title{Read shapefile into Map object}
 \description{
@@ -9,14 +9,16 @@
 }
 \usage{
 read.shape(filen, dbf.data = TRUE, verbose=TRUE)
-%dbf.read(filen)
 getinfo.shape(filen)
+print.shapehead(x, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{filen}{name of file with *.shp extension, or *.dbf for dbf.read()}
+  \item{filen}{name of file with *.shp extension}
   \item{dbf.data}{read DBF data together with shapes, default TRUE}
   \item{verbose}{default TRUE --- report type of shapefile and number of shapes}
+  \item{x}{a shapehead list as returned by getinfo.shape}
+  \item{...}{other arguments passed to print}
 }
 \details{
   The function calls code from shapelib to read shapefiles, a file format used by ESRI GIS software among others
@@ -26,7 +28,7 @@ read.shape() returns either a list of shapes of class ShapeList, or if dbf.data 
   \item{Shapes}{a list of shapes of class ShapeList; both the individual shapes and the list have attributes}
   \item{att.data}{a data frame of data from the associated DBF file; note that the field names are adjusted to use in R using \code{make.names()}, and so will permit the underscore character from R release 1.9.0.}
 }
-\references{\url{http://gdal.velocet.ca/projects/shapelib/}}
+\references{\url{http://shapelib.maptools.org/}}
 \author{Nicholas J. Lewin-Koh, modified by Roger Bivand \email{Roger.Bivand@nhh.no}; shapelib by Frank Warmerdam}
 
 \seealso{\code{\link{plot.Map}}}

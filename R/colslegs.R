@@ -49,36 +49,6 @@ leglabs <- function(vec, under="under", over="over", between="-") {
 	res
 }
 
-#findInterval2 <- function (y, vec, rightmost.closed = FALSE, all.inside = TRUE) 
-#{
-#    nx <- length(y)
-#    if (any(is.na(vec) | is.nan(vec))) stop ("NAs found in vec")
-#    if (is.unsorted(vec)) 
-#        stop("`vec' must be sorted non-decreasingly")
-#    if (vec[1] == -Inf) vec[1] <- -(.Machine$double.xmax)
-#    if (vec[length(vec)] == Inf) 
-#	vec[length(vec)] <- .Machine$double.xmax
-#    .C("find_interv_vec", xt = as.double(vec), n = length(vec), 
-#        x = as.double(y), nx = nx, as.logical(rightmost.closed), 
-#        as.logical(all.inside), index = integer(nx), DUP = FALSE,
-#	PACKAGE = "base")$index
-#}
-
-
-#ct <- cutree(hclust(dist(x, method="euclidean"), method="complete"), k=4)
-#o <- order(matrix(unlist(tapply(x, ct, range)), ncol=2, byrow=TRUE)[,1])
-#barplot(table(ct)[o])
-#by(x, ct, range)
-
-#k4 <- kmeans(x, 4)
-#o <- order(matrix(unlist(tapply(x, k4$cluster, range)), ncol=2, byrow=TRUE)[,1])
-#barplot(table(k4$cluster)[o])
-
-
-#unlist(tapply(x, rev(order(k4$centers))[k4$cluster], range))
-#matrix(unlist(tapply(x, rev(order(k4$centers))[k4$cluster], range)), 4, 2, byrow=TRUE)
-#by(x, rev(order(k4$centers))[k4$cluster], range)
-
 #The set of classification methods is large (Dent p. 145), but there are a few to remember:
 
 #        * Equal Intervals ("Constant Interval"): each class has same difference in value
