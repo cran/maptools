@@ -1,5 +1,3 @@
-dbf.read                Read DBF a file
-dbf.write               Write a DBF file
 dotsInPolys             Put dots in polygons
 get.Pcent               Polygon centroids
 gpcholes                Hisaji Ono's lake/hole problem
