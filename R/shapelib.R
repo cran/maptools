@@ -1,9 +1,16 @@
 # Copyright 2000-2001 (c) Nicholas Lewin-Koh 
-# modifications 2001-2003 Roger Bivand
+# modifications 2001-2004 Roger Bivand
 
 
 read.shape <- function(filen, dbf.data=TRUE) {
   shp.lst <- .Call("Rshapeget", as.character(filen), PACKAGE="maptools")
+  n <- length(shp.lst)
+  for (i in 1:n) {
+    attr(shp.lst[[i]], "nVerts") <- as.integer(shp.lst[[i]]$nVerts)
+    attr(shp.lst[[i]], "nParts") <- as.integer(shp.lst[[i]]$nParts)
+    attr(shp.lst[[i]], "shp.type") <- as.integer(shp.lst[[i]]$shp.type)
+    attr(shp.lst[[i]], "bbox") <- as.double(shp.lst[[i]]$bbox)
+  }
   class(shp.lst) <- "ShapeList"
   if (dbf.data) {
     df <- dbf.read(filen)
