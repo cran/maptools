@@ -44,20 +44,19 @@ plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
 
 \examples{
 try2 <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO), raw=FALSE)
+mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO))
 brks <- round(quantile(try2$att.data$CRIME, probs=seq(0,1,0.2)), digits=2)
 colours <- c("salmon1", "salmon2", "red3", "brown", "black")
 plot(mappolys, col=colours[findInterval(try2$att.data$CRIME, brks, all.inside=TRUE)], forcefill=FALSE)
 legend(x=c(5.8, 7.1), y=c(13, 14.5), legend=leglabs(brks),
   fill=colours, bty="n")
-title(main=paste("Columbus OH: residential burglaries and vehicle\nthefts",
-  "per thousand households, 1980"))
+invisible(title(main=paste("Columbus OH: residential burglaries and vehicle", "thefts per thousand households, 1980", sep="\n")))
 try3 <- read.shape(system.file("shapes/sids.shp", package="maptools")[1])
-mappolys <- Map2poly(try3, as.character(try3$att.data$FIPSNO), raw=FALSE)
+mappolys <- Map2poly(try3, as.character(try3$att.data$FIPSNO))
 cols <- c("pink", "orange", "red")
-np <- sapply(mappolys, function(x) attr(x, "nPart"))
+np <- sapply(mappolys, function(x) attr(x, "nParts"))
 plot(mappolys, col=cols[np], forcefill=FALSE)
-title(main="White: one part, orange: two part, red: three part polygons")
+invisible(title(main="White: one part, orange: two part, red: three part polygons"))
 plot(mappolys, density=c(10, 20, 30)[np], angle=c(-45, 0, 45)[np], axes=FALSE, forcefill=FALSE)
 }
 \keyword{spatial}

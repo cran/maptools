@@ -1,7 +1,7 @@
 useDynLib(maptools)
 
 export(leglabs, plotpolys, shape2poly, shape2lines, 
-	shape2points, shape2bbs, Map2poly, Map2lines, Map2points, 
+	shape2points, shape2bbs, Map2poly, Map2poly1, Map2lines, Map2points, 
 	Map2bbs, convert.pl, get.Pcent, read.shape, getinfo.shape,
 	plot.Map, plot.polylist, subset.polylist, maptools, dotsInPolys,
 	symbolsInPolys, write.pointShape, write.polylistShape, 

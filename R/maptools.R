@@ -1,5 +1,5 @@
 # Copyright 2000-2001 (c) Nicholas Lewin-Koh 
-# modifications 2001-2004 Roger Bivand, 
+# modifications 2001-2005 Roger Bivand, 
 # shape2poly based on code by Stéphane Dray
 
 plot.polylist <- function(x, col, border=par("fg"), add=FALSE, 
@@ -327,8 +327,27 @@ Map2points <- function(Map) {
 	res
 }
 
+Map2poly <- function(Map, region.id=NULL, quiet=TRUE) {
+	if (class(Map) != "Map") stop("not a Map")
+	if (attr(Map$Shapes,'shp.type') != 'poly')
+		stop("maptype not poly")
+	if (!is.null(region.id))
+		if (length(region.id) != length(unique(region.id)))
+			stop("region.id not unique")
+	res <- .get.polylist1(Map=Map, region.id=region.id, quiet=quiet)
+	attr(res, "maplim") <- Map2maplim(Map)
+	area <- sapply(res, function(x) attr(x, "area"))
+	pO <- order(area, decreasing=TRUE)
+	after <- as.integer(rep(NA, attr(Map$Shapes,'nshps')))
 
-Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
+	attr(res, "after") <- after
+	attr(res, "plotOrder") <- pO
+
+	res
+}
+
+
+Map2poly1 <- function(Map, region.id=NULL, raw=TRUE) {
 	if (class(Map) != "Map") stop("not a Map")
 	if (attr(Map$Shapes,'shp.type') != 'poly')
 		stop("maptype not poly")
@@ -407,7 +426,7 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 				xj <- pl[[ri[j]]]
 				jxc <- na.omit(xj[,1])
 				jyc <- na.omit(xj[,2])
-				pip <- mt.point.in.polygon(ixc, 
+				pip <- maptools:::mt.point.in.polygon(ixc, 
 					iyc, jxc, jyc)
 				int[j] <- ((pip == 1) | (pip > 1))
 #				int[j] <- ((pip == 1) | 
@@ -524,6 +543,7 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 		if (!gone[ii]) {
 			gone[ii] <- TRUE
 			pO[j] <- ii
+#cat("level 1:", j, ii, "\n")
 			j <- j+1
 		} else warning(paste("level 1 circularity at", ii))
 		ihits <- which(ins == ii)
@@ -542,6 +562,7 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 				if (!gone[jjj]) {
 					gone[jjj] <- TRUE
 					pO[j] <- jjj
+cat("level 2:", j, ii, "\n")
 					j <- j+1
 				} else warning(paste("level 2 circularity at", 
 					jjj))
@@ -614,10 +635,121 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 	class(res) <- "polylist"
 	invisible(res)
 }
+.get.polylist1 <- function(Map, region.id=NULL, quiet=TRUE) {
+	n <- attr(Map$Shapes,'nshps')
+	res <- vector(mode="list", length=n)
+	nParts <- integer(n)
+	for (i in 1:n) nParts[i] <- attr(Map$Shapes[[i]], "nParts")
+	for (i in 1:n) {
+		if (nParts[i] > 1) {
+			res[[i]] <- .getMultiShp1(Map$Shapes[[i]], nParts[i],
+				IID=i, quiet=quiet)
+		} else {
+			res[[i]] <- Map$Shapes[[i]]$verts
+			rD <- .ringDirxy(res[[i]])
+			if (rD != 1) {
+				res[[i]] <- res[[i]][nrow(res[[i]]):1,]
+				if (!quiet) warning(paste(
+					"Ring direction changed in shape", i))
+			}
+			attr(res[[i]], "pstart") <- list(from=as.integer(1), 
+				to=as.integer(nrow(Map$Shapes[[i]]$verts)))
+#				attr(Map$Shapes[[i]], "nVerts"))
+			attr(res[[i]], "after") <- 1
+			attr(res[[i]], "plotOrder") <- 1
+			attr(res[[i]], "bbox") <- 
+				as.vector(attr(Map$Shapes[[i]], "bbox"))
+			attr(res[[i]], "RingDir") <- 
+				as.vector(attr(Map$Shapes[[i]], "RingDir"))
+			attr(res[[i]], "nParts") <- nParts[i]
+			attr(res[[i]], "ringDir") <- .ringDirxy(res[[i]])
+			cents <- .RingCentrd_2d(res[[i]])
+			attr(res[[i]], "area") <- cents$area
+			attr(res[[i]], "centroid") <- list(x=cents$xc,
+				y=cents$yc)
+		}
+#		attr(res[[i]], "shpID") <- attr(Map$Shapes[[i]], "shpID")
+		shpID <- attr(Map$Shapes[[i]], "shpID")
+		attr(res[[i]], "shpID") <- ifelse (is.null(shpID), as.integer(NA), shpID)	}
+	if (is.null(region.id) || length(region.id) != n) {
+		attr(res, "region.id") <- as.character(1:n)
+	} else {
+		attr(res, "region.id") <- as.character(region.id)
+	}
+	class(res) <- "polylist"
+	invisible(res)
+}
 
 MapShapeIds <- function(Map) {
 	if (class(Map) != "Map") stop("not a Map")
 	sapply(Map$Shapes, function(x) attr(x, "shpID"))
+}
+.getMultiShp1 <- function(shp, nParts, IID, quiet=TRUE) {
+	Pstart <- shp$Pstart
+#	nVerts <- attr(shp, "nVerts")
+	nVerts <- nrow(shp$verts)
+	from <- integer(nParts)
+	to <- integer(nParts)
+	area <- double(nParts)
+	xc <- double(nParts)
+	yc <- double(nParts)
+	from[1] <- 1
+	for (j in 1:nParts) {
+		if (j == nParts) to[j] <- nVerts
+		else {
+			to[j] <- Pstart[j+1]
+			from[j+1] <- to[j]+1
+		}
+	}
+	poly <- shp$verts[from[1]:to[1],]
+	rD <- .ringDirxy(poly)
+	if (rD != 1) {
+		poly <- poly[nrow(poly):1,]
+		if (!quiet) warning(paste(
+			"Ring direction changed in shape", IID, "ring 1"))
+	}
+	cents <- .RingCentrd_2d(poly)
+	area[1] <- cents$area
+	xc[1] <- cents$xc
+	yc[1] <- cents$yc
+	res <- poly
+	if (nParts > 1) {
+	    for (j in 2:nParts) {
+	        res <- rbind(res, c(NA, NA))
+		poly <- shp$verts[from[j]:to[j],]
+		rD <- .ringDirxy(poly)
+		if (rD != 1) {
+			poly <- poly[nrow(poly):1,]
+			if (!quiet) warning(paste(
+			"Ring direction changed in shape", IID, "ring", j))
+		}
+		cents <- .RingCentrd_2d(poly)
+		area[j] <- cents$area
+		xc[j] <- cents$xc
+		yc[j] <- cents$yc
+	        res <- rbind(res, poly)
+	     }
+	}
+	for (j in 1:nParts) {
+		from[j] <- from[j] + (j-1)
+		to[j] <- to[j] + (j-1)
+	}
+	attr(res, "nParts") <- nParts
+	attr(res, "pstart") <- list(from=as.integer(from), to=as.integer(to))
+	attr(res, "bbox") <- as.vector(attr(shp, "bbox"))
+	attr(res, "RingDir") <- as.vector(attr(shp, "RingDir"))
+	rD <- integer(nParts)
+	for (j in 1:nParts) rD[j] <- ringDir(res, j)
+	attr(res, "ringDir") <- rD
+	pO <- order(area, decreasing=TRUE)
+	after <- as.integer(rep(NA, nParts))
+	attr(res, "centroid") <- list(x=xc[pO[1]], y=yc[pO[1]])
+
+	attr(res, "after") <- after
+	attr(res, "plotOrder") <- pO
+	attr(res, "area") <- sum(area)
+
+	res
 }
 
 .getMultiShp <- function(shp, nParts, raw=TRUE) {
@@ -735,5 +867,66 @@ convert.pl <- function(pl) {
 	res
 }
 
+.RingCentrd_2d <- function(plmat) {
+	nVert <- nrow(plmat)
+	x_base <- plmat[1,1]
+	y_base <- plmat[1,2]
+	Cy_accum <- 0.0
+	Cx_accum <- 0.0
+	Area <- 0.0
+	ppx <- plmat[2,1] - x_base
+	ppy <- plmat[2,2] - y_base
+	for (iv in 2:(nVert-2)) {
+		x = plmat[iv,1] - x_base
+		y = plmat[iv,2] - y_base
+		dx_Area <-  ((x * ppy) - (y * ppx)) * 0.5
+		Area <- Area + dx_Area
+		Cx_accum <- Cx_accum + ( ppx + x ) * dx_Area      
+		Cy_accum <- Cy_accum + ( ppy + y ) * dx_Area
+		ppx <- x
+		ppy <- y
+	}
+	xc <- (Cx_accum / (Area * 3)) + x_base
+	yc <- (Cy_accum / (Area * 3)) + y_base
+	list(xc=xc, yc=yc, area=Area)	
+}
 
+.ringDirxy <- function(xy) {
+	a <- xy[,1]
+	b <- xy[,2]
+	nvx <- length(b)
+
+	if((a[1] == a[nvx]) && (b[1] == b[nvx])) {
+		a <- a[-nvx]
+		b <- b[-nvx]
+		nvx <- nvx - 1
+	}
+
+	tX <- 0.0
+	dfYMax <- max(b)
+	ti <- 1
+	for (i in 1:nvx) {
+		if (b[i] == dfYMax && a[i] > tX) ti <- i
+	}
+	if ( (ti > 1) & (ti < nvx) ) { 
+		dx0 = a[ti-1] - a[ti]
+      		dx1 = a[ti+1] - a[ti]
+      		dy0 = b[ti-1] - b[ti]
+      		dy1 = b[ti+1] - b[ti]
+   	} else if (ti == nvx) {
+		dx0 = a[ti-1] - a[ti]
+      		dx1 = a[1] - a[ti]
+      		dy0 = b[ti-1] - b[ti]
+      		dy1 = b[1] - b[ti]
+   	} else {
+#   /* if the tested vertex is at the origin then continue from 0 (1) */ 
+     		dx1 = a[2] - a[1]
+      		dx0 = a[nvx] - a[1]
+      		dy1 = b[2] - b[1]
+      		dy0 = b[nvx] - b[1]
+   	}
+	v3 = ( (dx0 * dy1) - (dx1 * dy0) )
+	if ( v3 > 0 ) return(as.integer(1))
+   	else return(as.integer(-1))
+}
 
