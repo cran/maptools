@@ -1,15 +1,15 @@
 \name{read.shape}
 \alias{read.shape}
-\alias{dbf.read}
+%\alias{dbf.read}
 \alias{getinfo.shape}
 
 \title{Read shapefile into Map object}
 \description{
-  
+  Read shapefile into Map object; the file should be given including its ".shp" extension, and the function will reconstruct the names of the database (dbf) file and the index (shx) file from these.
 }
 \usage{
 read.shape(filen, dbf.data = TRUE)
-dbf.read(filen)
+%dbf.read(filen)
 getinfo.shape(filen)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -21,7 +21,7 @@ getinfo.shape(filen)
   The function calls code from shapelib to read shapefiles, a file format used by ESRI GIS software among others
 }
 \value{
-read.shape() returns either a list of shapes of class ShapeList, or if dbf.data = TRUE a list with:
+read.shape() returns either a list of shapes of class ShapeList, or if dbf.data = TRUE a Map object with:
   \item{Shapes}{a list of shapes of class ShapeList; both the individual shapes and the list have attributes}
   \item{att.data}{a data frame of data from the associated DBF file}
 }
