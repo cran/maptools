@@ -1,20 +1,22 @@
 % Copyright 2001-3 by Roger S. Bivand
 \name{plotpolys}
 \alias{plotpolys}
+\alias{plot.polylist}
 \alias{leglabs}
 \alias{findInterval2}
 \title{Plot polygons}
 \description{
-A helper function for plotting polygons in a global bounding box. \code{findInterval2} is a modified version of \code{findInterval2} that permits the vector of break points to start at -Inf and/or finish at Inf. \code{leglabs} makes character strings from the same break points.
+A helper function for plotting polygons in a global bounding box. \code{findInterval2} is a modified version of \code{findInterval2} that permits the vector of break points to start at -Inf and/or finish at Inf. \code{leglabs} makes character strings from the same break points. The \code{plot.polylist()} function may be used as a generic S3 method.
 }
 \usage{
 plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
+plot.polylist(x, ...)
 leglabs(vec, under="under", over="over", between="-")
-findInterval2(x, vec, rightmost.closed = FALSE, all.inside = TRUE)
+findInterval2(y, vec, rightmost.closed = FALSE, all.inside = TRUE)
 }
 
 \arguments{
-  \item{pl}{list of polygons of class \code{polylist}}
+  \item{pl, x}{list of polygons of class \code{polylist}}
   \item{bb}{matrix of polygon bounding boxes - columns are LL(x), LL(y), UR(x), UR(y); note that this argument may be omitted if the polygon list object has an "maplim" attribute, or if both xlim and ylim arguments are given}
   \item{col}{colurs to use for filling the polygons}
   \item{border}{the color to draw the border}
@@ -25,7 +27,7 @@ findInterval2(x, vec, rightmost.closed = FALSE, all.inside = TRUE)
   \item{under}{character value for under}
   \item{over}{character value for over}
   \item{between}{character value for between}
-  \item{x}{numeric vector to be broken into class intervals}
+  \item{y}{numeric vector to be broken into class intervals}
   \item{rightmost.closed}{as in findInterval()}
   \item{all.inside}{as in findInterval()}
 }

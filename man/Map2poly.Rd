@@ -49,7 +49,7 @@ convert.pl(pl)
 }
 
 \value{
-  \code{Map2poly}, \code{shape2poly}, \code{convert.pl} return polylist objects, lists of polygon boundary coordinates (divided by NA where the polygon object is represented by more than one polygon;
+  \code{Map2poly}, \code{shape2poly}, \code{convert.pl} return polylist objects, lists of polygon boundary coordinates (divided by NA where the polygon object is represented by more than one polygon);
   \code{Map2lines}, \code{shape2lines} return lineslist objects;
   \code{Map2points}, \code{shape2points} return (n x 2) matrices; and
   \code{Map2bbs}, \code{shape2bbs} return bounding box matrixes, c(x1, y1, x2, y2) with coordinates for the lower left corner and upper right corner.

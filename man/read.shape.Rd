@@ -23,7 +23,7 @@ getinfo.shape(filen)
 \value{
 read.shape() returns either a list of shapes of class ShapeList, or if dbf.data = TRUE a Map object with:
   \item{Shapes}{a list of shapes of class ShapeList; both the individual shapes and the list have attributes}
-  \item{att.data}{a data frame of data from the associated DBF file}
+  \item{att.data}{a data frame of data from the associated DBF file; note that the field names are adjusted to use in R using \code{make.names()}, and so will permit the underscore character from R release 1.9.0.}
 }
 \references{\url{http://gdal.velocet.ca/projects/shapelib/}}
 \author{Nicholas J. Lewin-Koh, modified by Roger Bivand \email{Roger.Bivand@nhh.no}; shapelib by Frank Warmerdam}

@@ -1,6 +1,6 @@
 Package: maptools
-Version: 0.3-2
-Date: 2003/09/12
+Version: 0.3-4
+Date: 2003/12/12
 Title: Maptools
 Author: Nicholas J. Lewin-Koh, modified by Roger Bivand <Roger.Bivand@nhh.no>; C code used from shapelib ()
 Maintainer: Roger Bivand <Roger.Bivand@nhh.no>
