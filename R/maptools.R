@@ -1,13 +1,29 @@
 # Copyright 2000-2001 (c) Nicholas Lewin-Koh 
-# modifications 2001-2003 Roger Bivand, 
+# modifications 2001-2004 Roger Bivand, 
 # shape2poly based on code by Stéphane Dray
 
-plot.polylist <- function(x, ...) {
-	plotpolys(x, ...)
+plot.polylist <- function(x, col=NA, border=par("fg"), add=FALSE, 
+	xlim=NULL, ylim=NULL, ...) {
+	if (!inherits(x, "polylist")) stop("Not a polygon list")
+	if (!add) {
+		maplim <- attr(x, "maplim")
+		if (is.null(maplim))
+			if (is.null(xlim) || is.null(ylim))
+				stop("map limits missing")
+		if (is.null(xlim)) xlim <- maplim$x
+		if (is.null(ylim)) ylim <- maplim$y
+		plot(x=xlim, y=ylim, xlim=xlim, ylim=ylim, type="n",
+		asp=1, xlab="", ylab="")
+	}
+	if (length(col) != length(x)) {
+		col <- rep(col, length(x), length(x))
+	}
+	for (j in 1:length(x)) polygon(x[[j]], col=col[j], border=border, ...)
 }
 
 plotpolys <- function(pl, bb, col=NA, border=par("fg"), add=FALSE, 
 	xlim=NULL, ylim=NULL, ...) {
+	.Deprecated("plot.polylist")
 	if (!inherits(pl, "polylist")) stop("Not a polygon list")
 	if (!add) {
 		maplim <- attr(pl, "maplim")

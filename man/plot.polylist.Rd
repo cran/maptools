@@ -1,18 +1,18 @@
 % Copyright 2001-3 by Roger S. Bivand
-\name{plotpolys}
+\name{plot.polylist}
 \alias{plotpolys}
 \alias{plot.polylist}
 \alias{leglabs}
 \alias{findInterval2}
 \title{Plot polygons}
 \description{
-A helper function for plotting polygons in a global bounding box. \code{findInterval2} is a modified version of \code{findInterval2} that permits the vector of break points to start at -Inf and/or finish at Inf. \code{leglabs} makes character strings from the same break points. The \code{plot.polylist()} function may be used as a generic S3 method.
+A helper function for plotting polygons in a global bounding box. \code{findInterval2} is a modified version of \code{findInterval2} that permits the vector of break points to start at -Inf and/or finish at Inf. \code{leglabs} makes character strings from the same break points. The \code{plot.polylist()} function may be used as a generic S3 method. NOTE! \code{plotpolys()} DEPRECATED: use generic plot() for polylist objects function instead.
 }
 \usage{
-plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
-plot.polylist(x, ...)
+plot.polylist(x, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
 leglabs(vec, under="under", over="over", between="-")
 findInterval2(y, vec, rightmost.closed = FALSE, all.inside = TRUE)
+plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
 }
 
 \arguments{
@@ -40,7 +40,7 @@ try2 <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
 mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO))
 brks <- round(quantile(try2$att.data$CRIME, probs=seq(0,1,0.2)), digits=2)
 colours <- c("salmon1", "salmon2", "red3", "brown", "black")
-plotpolys(mappolys, col=colours[findInterval2(try2$att.data$CRIME, brks)])
+plot(mappolys, col=colours[findInterval2(try2$att.data$CRIME, brks)])
 legend(x=c(5.8, 7.1), y=c(13, 14.5), legend=leglabs(brks),
   fill=colours, bty="n")
 title(main=paste("Columbus OH: residential burglaries and vehicle\nthefts",
@@ -50,7 +50,7 @@ mappolys <- Map2poly(try3, as.character(try3$att.data$FIPSNO))
 cols <- c("white", "orange", "red")
 np <- integer(length(mappolys))
 for (i in 1:length(mappolys)) np[i] <- attr(mappolys[[i]], "nPart")
-plotpolys(mappolys, col=cols[np])
+plot(mappolys, col=cols[np])
 title(main="White: one part, orange: two part, red: three part polygons")
 }
 \keyword{spatial}
