@@ -4,7 +4,7 @@
 
 plot.polylist <- function(x, col, border=par("fg"), add=FALSE, 
 	xlim=NULL, ylim=NULL, xlab="", ylab="", xpd=NULL, 
-	density=NULL, angle=45, pbg=par("bg"), forcefill=TRUE, ...) {
+	density=NULL, angle=45, pbg=NULL, forcefill=TRUE, ...) {
 	if (!inherits(x, "polylist")) stop("Not a polygon list")
 
 	usrpoly <- function(x) {
@@ -21,7 +21,10 @@ plot.polylist <- function(x, col, border=par("fg"), add=FALSE,
 		if (is.null(ylim)) ylim <- maplim$y
 		plot(x=xlim, y=ylim, xlim=xlim, ylim=ylim, type="n",
 			asp=1, xlab=xlab, ylab=ylab, ...)
-		polygon(usrpoly(par("usr")), col = pbg, border = NA)
+		if (!forcefill && !is.null(pbg)) {
+			polygon(usrpoly(par("usr")), col = pbg, border = NA)
+			box()
+		}
 	}
 	pO <- attr(x, "plotOrder")
 	if (is.null(pO)) pO <- 1:length(x)
@@ -33,8 +36,8 @@ plot.polylist <- function(x, col, border=par("fg"), add=FALSE,
 			angle <- rep(angle, length(x), length(x))
 		}
 		for (j in pO) polygonholes(x[[j]], border=border, 
-			xpd=xpd, density=density[j], angle=angle[j], pbg=pbg,
-			forcefill=forcefill)
+			xpd=xpd, density=density[j], angle=angle[j], 
+			pbg=pbg, forcefill=forcefill)
 	} else {
 		if (length(col) != length(x)) {
 			col <- rep(col, length(x), length(x))
@@ -43,7 +46,10 @@ plot.polylist <- function(x, col, border=par("fg"), add=FALSE,
 			polygonholes(x[[j]], col=col[j], border=border, 
 			xpd=xpd, pbg=pbg, forcefill=forcefill)
 	}
-	if (forcefill) warning("From next release, default fill behaviour will change")
+	if (!missing(col) | !is.null(density)) {
+		if (forcefill) 
+			warning("From next major release, default fill behaviour will change")
+	}
 }
 
 polygonholes <- function(coords, col=NA, border=NULL, xpd=NULL, density=NULL,
@@ -291,6 +297,8 @@ Map2lines <- function(Map) {
 				to=attr(Map$Shapes[[i]], "nVerts"))
 		}
 		attr(res[[i]], "nParts") <- nParts[i]
+		shpID <- attr(Map$Shapes[[i]], "shpID")
+		attr(res[[i]], "shpID") <- ifelse (is.null(shpID), as.integer(NA), shpID)
 	}
 	class(res) <- "lineslist"
 	attr(res, "maplim") <- Map2maplim(Map)
@@ -303,9 +311,15 @@ Map2points <- function(Map) {
 		stop("maptype not points")
 	n <- attr(Map$Shapes,'nshps')
 	res <- matrix(NA, nrow=n, ncol=2)
-	for (i in 1:n) res[i,] <- Map$Shapes[[i]]$verts
+	shpIDs <- integer(n)
+	for (i in 1:n) {
+		res[i,] <- Map$Shapes[[i]]$verts
+		shpID <- attr(Map$Shapes[[i]], "shpID")
+		shpIDs[i] <- ifelse (is.null(shpID), as.integer(NA), shpID)
+	}
 	class(res) <- "Mappoints"
 	attr(res, "maplim") <- Map2maplim(Map)
+	attr(res, "shpID") <- shpIDs
 	res
 }
 
@@ -314,6 +328,9 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 	if (class(Map) != "Map") stop("not a Map")
 	if (attr(Map$Shapes,'shp.type') != 'poly')
 		stop("maptype not poly")
+	if (!is.null(region.id))
+		if (length(region.id) != length(unique(region.id)))
+			stop("region.id not unique")
 	res <- .get.polylist(Map=Map, region.id=region.id, raw=raw)
 	attr(res, "maplim") <- Map2maplim(Map)
 	pO <- as.integer(1:attr(Map$Shapes,'nshps'))
@@ -570,8 +587,8 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 				raw=raw)
 		} else {
 			res[[i]] <- Map$Shapes[[i]]$verts
-			attr(res[[i]], "pstart") <- list(from=1, 
-				to=nVerts <- nrow(Map$Shapes[[i]]$verts))
+			attr(res[[i]], "pstart") <- list(from=as.integer(1), 
+				to=as.integer(nrow(Map$Shapes[[i]]$verts)))
 #				attr(Map$Shapes[[i]], "nVerts"))
 			attr(res[[i]], "after") <- 1
 			attr(res[[i]], "plotOrder") <- 1
@@ -582,7 +599,9 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 			attr(res[[i]], "nParts") <- nParts[i]
 			attr(res[[i]], "ringDir") <- ringDir(res[[i]], 1)
 		}
-	}
+#		attr(res[[i]], "shpID") <- attr(Map$Shapes[[i]], "shpID")
+		shpID <- attr(Map$Shapes[[i]], "shpID")
+		attr(res[[i]], "shpID") <- ifelse (is.null(shpID), as.integer(NA), shpID)	}
 	if (is.null(region.id) || length(region.id) != n) {
 		attr(res, "region.id") <- as.character(1:n)
 	} else {
@@ -590,6 +609,11 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 	}
 	class(res) <- "polylist"
 	invisible(res)
+}
+
+MapShapeIds <- function(Map) {
+	if (class(Map) != "Map") stop("not a Map")
+	sapply(Map$Shapes, function(x) attr(x, "shpID"))
 }
 
 .getMultiShp <- function(shp, nParts, raw=TRUE) {
@@ -618,7 +642,7 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 		to[j] <- to[j] + (j-1)
 	}
 	attr(res, "nParts") <- nParts
-	attr(res, "pstart") <- list(from=from, to=to)
+	attr(res, "pstart") <- list(from=as.integer(from), to=as.integer(to))
 	attr(res, "bbox") <- as.vector(attr(shp, "bbox"))
 	attr(res, "RingDir") <- as.vector(attr(shp, "RingDir"))
 	rD <- integer(nParts)
@@ -707,99 +731,5 @@ convert.pl <- function(pl) {
 	res
 }
 
-
-plot.Map <- function(x, recs, auxvar=NULL, add=FALSE, fg ='gray', 
-                   ol='black', prbg=NULL, glyph=16, 
-                   type='q', nclass=5, ...) 
-{
-  theMap <- x
-  if(!inherits(theMap, "Map"))
-  stop("Map.obj must be of class Map")
-
-  if(missing(recs)) recs <- 1:attr(theMap$Shapes,'nshps')
-
-  if (length(fg) != length(recs)) fg <- rep(fg[1], length(recs))
-
-  xylims <- Map2maplim(theMap)
-
-  if(!add){
-     plot(xylims$x, xylims$y, asp=1, type='n',...)
-  }
-  if(!is.null(prbg)) {
-    plim <- par()$usr
-    rect(plim[1], plim[2], plim[3], plim[4], col=prbg) #,border=par()$bg)
-   }
-
-  ret <- NULL
-  if(attr(theMap$Shapes,'shp.type') == 'point' ) {
-    for(i in recs) {
-      points(theMap$Shapes[[i]]$verts, pch=glyph, col=fg[i])
-    }
-  }
-  if(attr(theMap$Shapes,'shp.type') == 'arc'){
-    for(i in recs) {
-      if(attr(theMap$Shapes[[i]], 'nParts') == 1) {
-        lines(theMap$Shapes[[i]]$verts, col=ol)
-      }
-      if(attr(theMap$Shapes[[i]], 'nParts') > 1){
-        for(j in 1:attr(theMap$Shapes[[i]], 'nParts')) {
-	  if(j < attr(theMap$Shapes[[i]], 'nParts'))
-             lines(theMap$Shapes[[i]]$verts[j:(j+1)-1], col= ol)
-          else
-             lines(theMap$Shapes[[i]]$verts[j:attr(theMap$Shapes[[i]],
-             'nVerts')], col= ol)  
-        }
-      }
-    }
-  }
-  if(attr(theMap$Shapes,'shp.type') == 'poly'){
-    if(!is.null(auxvar) && nclass > 1) {
-      col.rmp <- color.ramp(nclass, nvec=auxvar)
-      for(i in recs) {
-        if(attr(theMap$Shapes[[i]], 'nParts') == 1) {
-          polygon(theMap$Shapes[[i]]$verts,
-                col=col.rmp$ramp[col.rmp$col.class[i]],
-                border= ol)
-        }
-        if(attr(theMap$Shapes[[i]], 'nParts') > 1) {
-          for(j in 1:attr(theMap$Shapes[[i]], 'nParts')) {
-	    if(j < attr(theMap$Shapes[[i]], 'nParts')) {
-              polygon(theMap$Shapes[[i]]$verts[(theMap$Shapes[[i]]$Pstart[j]+1):
-                    theMap$Shapes[[i]]$Pstart[j+1],],
-		    col=col.rmp$ramp[col.rmp$col.class[i]], border=ol)
-            } else {
-              polygon(theMap$Shapes[[i]]$verts[(theMap$Shapes[[i]]$Pstart[j]+1):
-                    attr(theMap$Shapes[[i]],'nVerts'),],
-                    col=col.rmp$ramp[col.rmp$col.class[i]],border= ol)
-            }
-          }
-        }
-      }
-      ret <- col.rmp
-    } else {
-      for(i in recs) {
-        if(attr(theMap$Shapes[[i]],'nParts') == 1) {
-          polygon(theMap$Shapes[[i]]$verts, col=fg[i], border= ol)
-        }
-        if(attr(theMap$Shapes[[i]],'nParts') > 1) {
-          for(j in 1:attr(theMap$Shapes[[i]], 'nParts')) {
-	    if(j<attr(theMap$Shapes[[i]], 'nParts')) {
-              polygon(theMap$Shapes[[i]]$verts[(theMap$Shapes[[i]]$Pstart[j]+1):
-                    theMap$Shapes[[i]]$Pstart[j+1],], col=fg[i] ,border= ol)
-            } else {
-              polygon(theMap$Shapes[[i]]$verts[(theMap$Shapes[[i]]$Pstart[j]+1):
-                    attr(theMap$Shapes[[i]],'nVerts'),],
-                    col=fg[i], border=ol)
-            }
-          }
-        }
-      }
-    }
-  }
-  if(attr(theMap$Shapes,'shp.type')=='multipoint'){
-    stop("Multipoint shape type not yet plotted")
-  }
-  invisible(ret)
-}
 
 

@@ -5,6 +5,7 @@
 \alias{Map2points}
 %\alias{Map2maplim}
 \alias{Map2bbs}
+\alias{MapShapeIds}
 \alias{shape2poly}
 \alias{shape2lines}
 \alias{shape2points}
@@ -27,6 +28,7 @@ Map2lines(Map)
 Map2points(Map)
 %Map2maplim(Map)
 Map2bbs(Map)
+MapShapeIds(Map)
 shape2poly(shape, region.id = NULL)
 shape2lines(shape)
 shape2points(shape)
@@ -64,7 +66,7 @@ convert.pl(pl)
 \examples{
 try2 <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
 mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO), raw=FALSE)
-plot(mappolys, forcefill=FALSE)
+plot(mappolys)
 title(main="Polygons for Columbus OH from maptools package")
 try3 <- read.shape(system.file("shapes/baltim.shp", package="maptools")[1])
 baltpts <- Map2points(try3)

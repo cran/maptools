@@ -1,3 +1,6 @@
+dbf.read                Read DBF a file
+dbf.write               Write a DBF file
+dotsInPolys             Put dots in polygons
 get.Pcent               Polygon centroids
 gpcholes                Hisaji Ono's lake/hole problem
 Map2poly                Create polygon lists and bounding boxes from
@@ -7,3 +10,6 @@ plot.Map                Plot a Map object
 plot.polylist           Plot polygons
 read.shape              Read shapefile into Map object
 subset.polylist         Subset polygon list objects
+symbolsInPolys          Place grids of points over polygons
+write.pointShape        Write a point-type shapefile
+write.polylistShape     Write a polygon-type shapefile

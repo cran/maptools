@@ -6,7 +6,7 @@ Copyrights
 
 Files: src/dbfopen.c, src/shapefil.h, src/shpopen.c and shptree.c are
 copyright (c) 1998 Frank Warmerdam, and released under the conditions
-given in http://gdal.velocet.ca/projects/shapelib/shapelib.html, with
+given in http://shapelib.maptools.org/license.html, with
 default license terms:
 
 This software is available under the following "MIT Style" license, or
@@ -33,7 +33,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 Further details of Shapelib may be found at its website
 
-http://gdal.velocet.ca/projects/shapelib/
+http://shapelib.maptools.org/
 
 It is the intention of the package maintainer to migrate to linking 
 against an external shapelib, rather than incoroprating complete files 
