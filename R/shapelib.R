@@ -71,6 +71,7 @@ write.polylistShape <- function(polylist, df, file, factor2char=TRUE) {
   if (nchar(basename(file)) > 8) 
     stop("shapefile names must conform to the 8.3 format")
   if (!inherits(polylist, "polylist")) stop("not a polylist object")
+  if (length(polylist) < 1) stop("zero length polylist")
   if (nrow(df) != length(polylist))
     stop("different number of rows in polylist and data frame")
   if (!any(sapply(polylist, function(x) is.double(x)))) {
@@ -99,6 +100,28 @@ write.polylistShape <- function(polylist, df, file, factor2char=TRUE) {
   library(foreign)
   write.dbf(df, paste(file, ".dbf", sep=""), factor2char=factor2char)
   res <- .Call("shpwritepolys", as.character(file), polylist, 
+    PACKAGE="maptools")
+  invisible(res)
+}
+
+write.linelistShape <- function(linelist, df, file, factor2char=TRUE) {
+  file <- path.expand(file)
+  if (nchar(basename(file)) > 8) 
+    stop("shapefile names must conform to the 8.3 format")
+  if (length(linelist) < 1) stop("zero length linelist")
+  if (nrow(df) != length(linelist))
+    stop("different number of rows in linelist and data frame")
+  if (!all(sapply(linelist, function(x) all(!is.na(x)))))
+    stop("NAs in line coordinate data")
+  if (!any(sapply(linelist, function(x) is.double(x)))) {
+    for (i in 1:length(linelist)) { 
+      linelist[[i]] <- matrix(as.double(linelist[[i]]), ncol=2)
+    }
+    warning("coordinates changed to double")
+  }
+  library(foreign)
+  write.dbf(df, paste(file, ".dbf", sep=""), factor2char=factor2char)
+  res <- .Call("shpwritelines", as.character(file), linelist, 
     PACKAGE="maptools")
   invisible(res)
 }

@@ -42,10 +42,12 @@ color.ramp <- function (nclass, color = "red", nvec = NULL, type = "q"){
 
 leglabs <- function(vec, under="under", over="over", between="-") {
 	x <- vec
-	res <- character(length(x)-1)
+	lx <- length(x)
+	if(lx < 3) stop("vector too short")
+	res <- character(lx-1)
 	res[1] <- paste(under, x[2])
-	for (i in 2:(length(x)-2)) res[i] <- paste(x[i], between, x[i+1])
-	res[length(x)-1] <- paste(over, x[length(x)-1])
+	for (i in 2:(lx-2)) res[i] <- paste(x[i], between, x[i+1])
+	res[lx-1] <- paste(over, x[lx-1])
 	res
 }
 

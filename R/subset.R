@@ -3,6 +3,7 @@
 subset.polylist <- function(x, subset, fit.bbox=TRUE, ...) {
 	if (!inherits(x, "polylist")) stop("x not a polylist object")
 	if (!is.logical(subset)) stop("subset not a logical vector")
+	if (length(x) < 1) stop("zero length polylist")
 	if (length(x) != length(subset)) stop("x and subset different lengths")
 	res <- subset.default(x, subset)
 	attr(res, "region.id") <- subset.default(attr(x, "region.id"), subset)

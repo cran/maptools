@@ -84,3 +84,56 @@ SEXP shpwritepolys(SEXP fname, SEXP shapes)
 }
 
 
+SEXP shpwritelines(SEXP fname, SEXP shapes)
+{
+    SHPHandle   hSHP;
+    SHPObject   *psShape;
+    int         nShapeType, i, j;
+    int		nShapes, maxnVerts=0;
+    int		*nVerts;
+    double      *padfX, *padfY;
+ 
+    nShapeType = SHPT_ARC;
+
+/* -------------------------------------------------------------------- */
+/*      Create the requested layer.                                     */
+/* -------------------------------------------------------------------- */
+
+    hSHP = SHPCreate(R_ExpandFileName(CHAR(STRING_ELT(fname,0))), nShapeType );
+
+    if( hSHP == NULL )
+    {
+         error("Unable to create:%s\n", CHAR(STRING_ELT(fname,0)) );
+    }
+
+    nShapes = GET_LENGTH(shapes);
+    nVerts = (int *) R_alloc((long) nShapes, sizeof(int));
+
+    for (i = 0; i < nShapes; i++) {
+      nVerts[i] = INTEGER_POINTER(GET_DIM(VECTOR_ELT(shapes, i)))[0];
+      if (nVerts[i] > maxnVerts) maxnVerts = nVerts[i];
+    } 
+    if (maxnVerts < 1)
+      error("list object cannot be exported");
+    padfX = (double *) R_alloc((long) maxnVerts, sizeof(double));
+    padfY = (double *) R_alloc((long) maxnVerts, sizeof(double)); 
+
+    for (i = 0; i < nShapes; i++) {
+      for (j = 0; j < nVerts[i]; j++) {
+          padfX[j] = NUMERIC_POINTER(VECTOR_ELT(shapes, i))[j];
+          padfY[j] = NUMERIC_POINTER(VECTOR_ELT(shapes, i))[j+nVerts[i]];
+      }
+
+      psShape = SHPCreateObject(nShapeType, -1, 0, NULL, NULL, nVerts[i], 
+        padfX, padfY, NULL, NULL);
+
+      SHPWriteObject( hSHP, -1, psShape );
+      SHPDestroyObject( psShape );
+    } 
+
+    SHPClose( hSHP );
+
+    return R_NilValue;
+}
+
+

@@ -9,5 +9,6 @@ plot.polylist           Plot polygons
 read.shape              Read shapefile into Map object
 subset.polylist         Subset polygon list objects
 symbolsInPolys          Place grids of points over polygons
+write.linelistShape     Write a arc-type shapefile
 write.pointShape        Write a point-type shapefile
 write.polylistShape     Write a polygon-type shapefile
