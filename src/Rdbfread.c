@@ -71,7 +71,7 @@
 SEXP Rdbfread(SEXP);
 
 
-static char* nameMangle(char *dbfname, int len){
+/* static char* nameMangle(char *dbfname, int len){
     int i, flag=0;
     for(i=0;i<len;i++) {
       if (dbfname[i]=='_') {
@@ -81,7 +81,7 @@ static char* nameMangle(char *dbfname, int len){
     }
     if (flag > 0) Rprintf("DBF field with \"_\" changed to %s\n", dbfname);
     return dbfname;
-}
+} */
 
 SEXP Rdbfread(SEXP dbfnm)
 {
@@ -160,17 +160,20 @@ SEXP Rdbfread(SEXP dbfnm)
       if(INTEGER(types)[i]==0) continue;
       if(INTEGER(types)[i]==1) {
   	SET_VECTOR_ELT(df, nRvar, allocVector(STRSXP,nrecs)); 
-    	SET_STRING_ELT(varlabels, nRvar, mkChar(nameMangle(szTitle, 12)));  
+/*    	SET_STRING_ELT(varlabels, nRvar, mkChar(nameMangle(szTitle, 12)));  */
+    	SET_STRING_ELT(varlabels, nRvar, mkChar(szTitle));  
   	nRvar++; 
       }
       if(INTEGER(types)[i]==2) {
 	SET_VECTOR_ELT(df, nRvar, allocVector(INTSXP,nrecs));
-    	SET_STRING_ELT(varlabels, nRvar, mkChar(nameMangle(szTitle, 12)));  
+/*    	SET_STRING_ELT(varlabels, nRvar, mkChar(nameMangle(szTitle, 12)));  */
+    	SET_STRING_ELT(varlabels, nRvar, mkChar(szTitle));  
 	nRvar++;
       }
       if(INTEGER(types)[i]==3) {
 	SET_VECTOR_ELT(df, nRvar, allocVector(REALSXP,nrecs));
-    	SET_STRING_ELT(varlabels, nRvar, mkChar(nameMangle(szTitle, 12)));  
+/*    	SET_STRING_ELT(varlabels, nRvar, mkChar(nameMangle(szTitle, 12)));  */
+    	SET_STRING_ELT(varlabels, nRvar, mkChar(szTitle));  
 	nRvar++;
       }
     }

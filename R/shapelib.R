@@ -18,6 +18,14 @@ read.shape <- function(filen, dbf.data=TRUE) {
 
 dbf.read <- function(filen) {
   df <- .Call("Rdbfread", as.character(filen), PACKAGE="maptools")
+  onames <- names(df)
+  inames <- make.names(onames, unique=TRUE)
+  names(df) <- inames
+  if (!(identical(onames, inames))) {
+    for (i in 1:length(onames))
+      if (!(identical(onames[i], inames[i]))) 
+        cat("Field name: ", onames[i], " changed to: ", inames[i], "\n")
+  }
   df <- data.frame(lapply(df,
     function(x) {if(is.character(x)) {factor(x)} else x }))
   df
@@ -25,6 +33,13 @@ dbf.read <- function(filen) {
 
 #reads an ESRI shapefile into a map object
 #set the variables for the header info
+
+dbf.write <- function(dataframe, filename, precision){
+  if (any(sapply(dataframe, function(x) !is.null(dim(x)))))
+    stop("Can't handle multicolumn columns")
+  invisible( .External("DoWritedbf", as.character(filename), 
+    dataframe, as.integer(precision), PACKAGE="maptools"))
+}
 
 getinfo.shape <- function(filen) {
   shptype <- 0

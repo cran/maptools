@@ -2,6 +2,9 @@
 # modifications 2001-2003 Roger Bivand, 
 # shape2poly based on code by Stéphane Dray
 
+plot.polylist <- function(x, ...) {
+	plotpolys(x, ...)
+}
 
 plotpolys <- function(pl, bb, col=NA, border=par("fg"), add=FALSE, 
 	xlim=NULL, ylim=NULL, ...) {
