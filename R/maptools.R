@@ -3,8 +3,8 @@
 # shape2poly based on code by Stéphane Dray
 
 plot.polylist <- function(x, col, border=par("fg"), add=FALSE, 
-	xlim=NULL, ylim=NULL, xpd=NULL, density=NULL, angle=45, 
-	pbg=par("bg"), forcefill=TRUE, ...) {
+	xlim=NULL, ylim=NULL, xlab="", ylab="", xpd=NULL, 
+	density=NULL, angle=45, pbg=par("bg"), forcefill=TRUE, ...) {
 	if (!inherits(x, "polylist")) stop("Not a polygon list")
 
 	usrpoly <- function(x) {
@@ -20,7 +20,7 @@ plot.polylist <- function(x, col, border=par("fg"), add=FALSE,
 		if (is.null(xlim)) xlim <- maplim$x
 		if (is.null(ylim)) ylim <- maplim$y
 		plot(x=xlim, y=ylim, xlim=xlim, ylim=ylim, type="n",
-			asp=1, xlab="", ylab="", ...)
+			asp=1, xlab=xlab, ylab=ylab, ...)
 		polygon(usrpoly(par("usr")), col = pbg, border = NA)
 	}
 	pO <- attr(x, "plotOrder")

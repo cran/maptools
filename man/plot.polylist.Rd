@@ -10,7 +10,8 @@ A helper function for plotting polygons in a global bounding box, attempts to ha
 }
 \usage{
 plot.polylist(x, col, border = par("fg"), add = FALSE, xlim=NULL,
- ylim=NULL, xpd = NULL, density = NULL, angle = 45, pbg=par("bg"), forcefill=TRUE, ...)
+ ylim=NULL, xlab = "", ylab = "", xpd = NULL, density = NULL, angle = 45, 
+ pbg=par("bg"), forcefill=TRUE, ...)
 leglabs(vec, under="under", over="over", between="-")
 plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
 }
@@ -22,6 +23,7 @@ plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
   \item{border}{the color to draw the border}
   \item{add}{add to existing plot}
   \item{xlim, ylim}{numeric of length 2, giving the x and y coordinates ranges}
+  \item{xlab, ylab}{x and y axis labels, default no label}
   \item{xpd}{(where) should clipping take place?}
   \item{density}{the density of shading lines, in lines per inch}
   \item{angle}{the slope of shading lines, given as an angle in degrees (counter-clockwise)}
