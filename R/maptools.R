@@ -386,11 +386,12 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 				xj <- pl[[ri[j]]]
 				jxc <- na.omit(xj[,1])
 				jyc <- na.omit(xj[,2])
-				pip <- mt.point.in.polygon(ixc, iyc, jxc, 
-					jyc)
-				int[j] <- ((pip == 1) | 
-					((pip > 1) & ((rD[i] == 1) & 
-					(rD[ri[j]] == -1))))
+				pip <- maptools:::mt.point.in.polygon(ixc, 
+					iyc, jxc, jyc)
+				int[j] <- ((pip == 1) | (pip > 1))
+#				int[j] <- ((pip == 1) | 
+#					((pip > 1) & ((rD[i] == 1) & 
+#					(rD[ri[j]] == -1))))
 
 			}
 			rj <- ri[int]
