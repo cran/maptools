@@ -386,7 +386,7 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 				xj <- pl[[ri[j]]]
 				jxc <- na.omit(xj[,1])
 				jyc <- na.omit(xj[,2])
-				pip <- maptools:::mt.point.in.polygon(ixc, 
+				pip <- mt.point.in.polygon(ixc, 
 					iyc, jxc, jyc)
 				int[j] <- ((pip == 1) | (pip > 1))
 #				int[j] <- ((pip == 1) | 
@@ -571,7 +571,8 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 		} else {
 			res[[i]] <- Map$Shapes[[i]]$verts
 			attr(res[[i]], "pstart") <- list(from=1, 
-				to=attr(Map$Shapes[[i]], "nVerts"))
+				to=nVerts <- nrow(Map$Shapes[[i]]$verts))
+#				attr(Map$Shapes[[i]], "nVerts"))
 			attr(res[[i]], "after") <- 1
 			attr(res[[i]], "plotOrder") <- 1
 			attr(res[[i]], "bbox") <- 
@@ -593,7 +594,8 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 
 .getMultiShp <- function(shp, nParts, raw=TRUE) {
 	Pstart <- shp$Pstart
-	nVerts <- attr(shp, "nVerts")
+#	nVerts <- attr(shp, "nVerts")
+	nVerts <- nrow(shp$verts)
 	from <- integer(nParts)
 	to <- integer(nParts)
 	from[1] <- 1

@@ -62,8 +62,7 @@ convert.pl(pl)
 
 
 \examples{
-try2 <- read.shape(system.file("shapes/columbus.shp", 
-  package="maptools")[1])
+try2 <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
 mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO), raw=FALSE)
 plot(mappolys, forcefill=FALSE)
 title(main="Polygons for Columbus OH from maptools package")
