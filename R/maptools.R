@@ -37,7 +37,7 @@ plot.polylist <- function(x, col, border=par("fg"), add=FALSE,
 
 plotpolys <- function(pl, bb, col=NA, border=par("fg"), add=FALSE, 
 	xlim=NULL, ylim=NULL, ...) {
-	.Deprecated("plot.polylist")
+	.Deprecated("plot.polylist", package="maptools")
 	if (!inherits(pl, "polylist")) stop("Not a polygon list")
 	if (!add) {
 		maplim <- attr(pl, "maplim")
@@ -393,6 +393,7 @@ plot.Map <- function(x, recs, auxvar=NULL, add=FALSE, fg ='gray',
     rect(plim[1], plim[2], plim[3], plim[4], col=prbg) #,border=par()$bg)
    }
 
+  ret <- NULL
   if(attr(theMap$Shapes,'shp.type') == 'point' ) {
     for(i in recs) {
       points(theMap$Shapes[[i]]$verts, pch=glyph, col=fg[i])
@@ -437,6 +438,7 @@ plot.Map <- function(x, recs, auxvar=NULL, add=FALSE, fg ='gray',
           }
         }
       }
+      ret <- col.rmp
     } else {
       for(i in recs) {
         if(attr(theMap$Shapes[[i]],'nParts') == 1) {
@@ -460,6 +462,7 @@ plot.Map <- function(x, recs, auxvar=NULL, add=FALSE, fg ='gray',
   if(attr(theMap$Shapes,'shp.type')=='multipoint'){
     stop("Multipoint shape type not yet plotted")
   }
+  invisible(ret)
 }
 
 

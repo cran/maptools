@@ -1,6 +1,6 @@
 useDynLib(maptools)
 
-export(leglabs, findInterval2, plotpolys, shape2poly, shape2lines, 
+export(leglabs, plotpolys, shape2poly, shape2lines, 
 	shape2points, shape2bbs, Map2poly, Map2lines, Map2points, 
 	Map2bbs, convert.pl, get.Pcent, read.shape, getinfo.shape,
 	plot.Map, plot.polylist, subset.polylist)
