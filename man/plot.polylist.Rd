@@ -3,16 +3,15 @@
 \alias{plotpolys}
 \alias{plot.polylist}
 \alias{leglabs}
-\alias{findInterval2}
 \title{Plot polygons}
 \description{
-A helper function for plotting polygons in a global bounding box. \code{findInterval2} is a modified version of \code{findInterval2} that permits the vector of break points to start at -Inf and/or finish at Inf. \code{leglabs} makes character strings from the same break points. The \code{plot.polylist()} function may be used as a generic S3 method. NOTE! \code{plotpolys()} DEPRECATED: use generic plot() for polylist objects function instead.
+A helper function for plotting polygons in a global bounding box. 
+\code{leglabs} makes character strings from the same break points. The \code{plot.polylist()} function may be used as a generic S3 method. NOTE! \code{plotpolys()} DEPRECATED: use generic plot() for polylist objects function instead.
 }
 \usage{
 plot.polylist(x, col, border = par("fg"), add = FALSE, xlim=NULL,
  ylim=NULL, xpd = NULL, density = NULL, angle = 45, ...)
 leglabs(vec, under="under", over="over", between="-")
-findInterval2(y, vec, rightmost.closed = FALSE, all.inside = TRUE)
 plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
 }
 
@@ -31,9 +30,9 @@ plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
   \item{under}{character value for under}
   \item{over}{character value for over}
   \item{between}{character value for between}
-  \item{y}{numeric vector to be broken into class intervals}
-  \item{rightmost.closed}{as in findInterval()}
-  \item{all.inside}{as in findInterval()}
+%  \item{y}{numeric vector to be broken into class intervals}
+%  \item{rightmost.closed}{as in findInterval()}
+%  \item{all.inside}{as in findInterval()}
 }
 \author{Roger Bivand \email{Roger.Bivand@nhh.no}}
 
@@ -44,7 +43,7 @@ try2 <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
 mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO))
 brks <- round(quantile(try2$att.data$CRIME, probs=seq(0,1,0.2)), digits=2)
 colours <- c("salmon1", "salmon2", "red3", "brown", "black")
-plot(mappolys, col=colours[findInterval2(try2$att.data$CRIME, brks)])
+plot(mappolys, col=colours[findInterval(try2$att.data$CRIME, brks)])
 legend(x=c(5.8, 7.1), y=c(13, 14.5), legend=leglabs(brks),
   fill=colours, bty="n")
 title(main=paste("Columbus OH: residential burglaries and vehicle\nthefts",

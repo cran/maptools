@@ -19,9 +19,10 @@ color.ramp <- function (nclass, color = "red", nvec = NULL, type = "q"){
       brks <- c(min(nvec, na.rm = TRUE),
                 quantile(nvec, pr, names = FALSE, na.rm = TRUE),
                 max(nvec, na.rm = TRUE))
+      brks <- unique(brks)
       classvec <- cut(nvec, brks, labels = FALSE, include.lowest = TRUE)
       ramp <- hsv(rep(color.list$hsvcol[cind], nclass), c(pr, 1))
-      return(list(ramp = ramp, col.class = classvec))
+      return(list(ramp = ramp, col.class = classvec, breaks=brks))
       }
   else
     if(type == "e"){
@@ -30,9 +31,10 @@ color.ramp <- function (nclass, color = "red", nvec = NULL, type = "q"){
       brks <- c(min(nvec, na.rm = TRUE),
                 pr * diff(range(nvec, na.rm = TRUE)),
                 max(nvec, na.rm = TRUE))
+      brks <- unique(brks)
       classvec <- cut(nvec, brks, labels = FALSE, include.lowest = TRUE)
       ramp <- hsv(rep(color.list$hsvcol[cind], nclass), c(pr, 1))
-      return(list(ramp = ramp, col.class = classvec))
+      return(list(ramp = ramp, col.class = classvec, breaks=brks))
       }
     }
   return(NULL)
@@ -47,20 +49,20 @@ leglabs <- function(vec, under="under", over="over", between="-") {
 	res
 }
 
-findInterval2 <- function (y, vec, rightmost.closed = FALSE, all.inside = TRUE) 
-{
-    nx <- length(y)
-    if (any(is.na(vec) | is.nan(vec))) stop ("NAs found in vec")
-    if (is.unsorted(vec)) 
-        stop("`vec' must be sorted non-decreasingly")
-    if (vec[1] == -Inf) vec[1] <- -(.Machine$double.xmax)
-    if (vec[length(vec)] == Inf) 
-	vec[length(vec)] <- .Machine$double.xmax
-    .C("find_interv_vec", xt = as.double(vec), n = length(vec), 
-        x = as.double(y), nx = nx, as.logical(rightmost.closed), 
-        as.logical(all.inside), index = integer(nx), DUP = FALSE,
-	PACKAGE = "base")$index
-}
+#findInterval2 <- function (y, vec, rightmost.closed = FALSE, all.inside = TRUE) 
+#{
+#    nx <- length(y)
+#    if (any(is.na(vec) | is.nan(vec))) stop ("NAs found in vec")
+#    if (is.unsorted(vec)) 
+#        stop("`vec' must be sorted non-decreasingly")
+#    if (vec[1] == -Inf) vec[1] <- -(.Machine$double.xmax)
+#    if (vec[length(vec)] == Inf) 
+#	vec[length(vec)] <- .Machine$double.xmax
+#    .C("find_interv_vec", xt = as.double(vec), n = length(vec), 
+#        x = as.double(y), nx = nx, as.logical(rightmost.closed), 
+#        as.logical(all.inside), index = integer(nx), DUP = FALSE,
+#	PACKAGE = "base")$index
+#}
 
 
 #ct <- cutree(hclust(dist(x, method="euclidean"), method="complete"), k=4)

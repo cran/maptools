@@ -28,11 +28,12 @@ plot.Map(x, recs, auxvar = NULL, add = FALSE, fg = "gray", ol = "black",
 %  \item{nvec}{data vector to convert to class intervals}
 }
 
-%\value{
-%  color.ramp() returns a list with componemts:
-%  \item{ramp}{vector of colours}
-%  \item{col.class}{vector of classes}
-%}
+\value{
+  If the \code{auxvar} variable is not used, the function returns NULL, otherwise it returns the list constructed by \code{maptools:::color.ramp()} with components:
+  \item{ramp}{vector of colours}
+  \item{col.class}{vector of classes}
+  \item{breaks}{class intervals given as argument to cut}
+}
 
 \author{Nicholas J. Lewin-Koh, modified by Roger Bivand \email{Roger.Bivand@nhh.no}}
 
@@ -47,7 +48,8 @@ table(nParts)
 cols <- c("azure", "blue", "orange")
 fgs <- cols[nParts]
 plot(x, fg=fgs)
-
+res <- plot(x, auxvar=x$att.data$BIR74)
+str(res)
 }
 \keyword{spatial}
 
