@@ -46,7 +46,7 @@ convert.pl(pl)
 %  \item{ring}{the ring (one of \code{1:attr(xy, "nParts"))} index number}
 }
 \details{
-  From the current release \code{Map2poly} tries to determine a plotting order for multiple parts of a single polygon object, and for lists of polygon objects to avoid overplotting. It also tries to respect the ESRI-stipulated rule that lakes are anti-clockwise and islanda are clockwise: \url{http://shapelib.maptools.org/dl/shapefile.pdf}: "The order of vertices or orientation for a ring indicates which side of the ring is the interior of the polygon. The neighborhood to the right of an observer walking along the ring in vertex order is the neighborhood inside the polygon. Vertices of rings defining holes in polygons are in a counterclockwise direction. Vertices for a single, ringed polygon are, therefore, always in clockwise order" (p.8). If raw=FALSE, ans additional attempt is made to enforce the final stipulation, where the polygon's bounding box does not fall wholly inside the bounding box of another polygon. This may generate warnings indicating when this has taken place, indicating an unexpected ring direction in the imported shapefile.
+  From release 0.4-1, \code{Map2poly} tries to determine a plotting order for multiple parts of a single polygon object, and for lists of polygon objects to avoid overplotting. It also tries to respect the ESRI-stipulated rule that lakes are anti-clockwise and islands are clockwise: \url{http://shapelib.maptools.org/dl/shapefile.pdf}: "The order of vertices or orientation for a ring indicates which side of the ring is the interior of the polygon. The neighborhood to the right of an observer walking along the ring in vertex order is the neighborhood inside the polygon. Vertices of rings defining holes in polygons are in a counterclockwise direction. Vertices for a single, ringed polygon are, therefore, always in clockwise order" (p.8). If raw=FALSE, an additional attempt is made to enforce the final stipulation, where the polygon's bounding box does not fall wholly inside the bounding box of another polygon. This may generate warnings indicating when this has taken place, indicating an unexpected ring direction in the imported shapefile.
 }
 
 \value{
@@ -62,36 +62,11 @@ convert.pl(pl)
 
 
 \examples{
-shp <- try(library(shapefiles))
-if (class(shp) != "try-error") {
-  ShapeDir <- system.file("shapes", package="maptools")[1]
-  try1 <- read.shapefile(paste(ShapeDir, "columbus", sep="/"))
-  shppolys <- shape2poly(try1, as.character(try1$dbf$dbf$NEIGNO))
-  plot(shppolys)
-  title(main="Polygons for Columbus OH from shapefiles package")
-  try3a <- read.shapefile(paste(ShapeDir, "baltim", sep="/"))
-  baltptsa <- shape2points(try3a)
-  xylims <- attr(baltptsa, "maplim")
-  plot(xylims$x, xylims$y, asp=1, type='n', xlab="", ylab="")
-  points(baltptsa)
-  title(main="Baltimore points from shapefiles package")
-  try4a <- read.shapefile(paste(ShapeDir, "fylk-val", sep="/"))
-  fylk.vala <- shape2lines(try4a)
-  xylims <- attr(fylk.vala, "maplim")
-  plot(xylims$x, xylims$y, asp=1, type='n', xlab="", ylab="")
-  for (i in 1:length(fylk.vala)) lines(fylk.vala[[i]])
-  title(main="Norwegian river centrelines from shapefiles package")
-}
 try2 <- read.shape(system.file("shapes/columbus.shp", 
   package="maptools")[1])
 mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO), raw=FALSE)
 plot(mappolys, forcefill=FALSE)
 title(main="Polygons for Columbus OH from maptools package")
-if (class(shp) != "try-error") {
-  plot(shppolys)
-  plot(mappolys, add=TRUE, border="red", lty="dotted")
-  title(main="Polygons for Columbus OH overplotted from both packages")
-}
 try3 <- read.shape(system.file("shapes/baltim.shp", package="maptools")[1])
 baltpts <- Map2points(try3)
 xylims <- attr(baltpts, "maplim")
