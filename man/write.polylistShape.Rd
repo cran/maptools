@@ -30,7 +30,7 @@ write.polylistShape(polylist, df, file, factor2char = TRUE)
 \seealso{\code{\link{write.pointShape}}, \code{\link[foreign]{write.dbf}}}
 \examples{
 col_orig <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-mappolys <- Map2poly(col_orig, as.character(col_orig$att.data$NEIGNO), raw=FALSE)
+mappolys <- Map2poly(col_orig, as.character(col_orig$att.data$NEIGNO))
 plot(mappolys)
 col_df <- col_orig$att.data
 col_cheap <- subset(mappolys, col_df$HOVAL < 34)
@@ -39,7 +39,7 @@ file <- tempfile("")
 write.polylistShape(col_cheap, col_df_cheap, file)
 getinfo.shape(paste(file, ".shp", sep=""))
 col_new <- read.shape(paste(file, ".shp", sep=""))
-mappolys <- Map2poly(col_new, as.character(col_new$att.data$NEIGNO), raw=FALSE)
+mappolys <- Map2poly(col_new, as.character(col_new$att.data$NEIGNO))
 plot(mappolys, border="red", add=TRUE)
 }
 \keyword{spatial}

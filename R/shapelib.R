@@ -74,7 +74,7 @@ write.polylistShape <- function(polylist, df, file, factor2char=TRUE) {
   if (length(polylist) < 1) stop("zero length polylist")
   if (nrow(df) != length(polylist))
     stop("different number of rows in polylist and data frame")
-  if (!any(sapply(polylist, function(x) is.double(x)))) {
+  if (!all(sapply(polylist, function(x) is.double(x)))) {
     for (i in 1:length(polylist)) { 
       a <- attributes(polylist[[i]])
       polylist[[i]] <- matrix(as.double(polylist[[i]]), ncol=2)
@@ -82,17 +82,17 @@ write.polylistShape <- function(polylist, df, file, factor2char=TRUE) {
     }
     warning("coordinates changed to double")
   }
-  if (!any(sapply(polylist, function(x) is.integer(attr(x, "nParts"))))) {
+  if (!all(sapply(polylist, function(x) is.integer(attr(x, "nParts"))))) {
     for (i in 1:length(polylist)) attr(polylist[[i]], "nParts") <- 
 		as.integer(attr(polylist[[i]], "nParts"))
     warning("nParts changed to integer")
   }
-  if (!any(sapply(polylist, function(x) is.integer(attr(x, "pstart")$from)))) {
+  if (!all(sapply(polylist, function(x) is.integer(attr(x, "pstart")$from)))) {
     for (i in 1:length(polylist)) attr(polylist[[i]], "pstart")$from <- 
 		as.integer(attr(polylist[[i]], "pstart")$from)
     warning("pstart$from changed to integer")
   }
-  if (!any(sapply(polylist, function(x) is.integer(attr(x, "pstart")$to)))) {
+  if (!all(sapply(polylist, function(x) is.integer(attr(x, "pstart")$to)))) {
     for (i in 1:length(polylist)) attr(polylist[[i]], "pstart")$to <- 
 		as.integer(attr(polylist[[i]], "pstart")$to)
     warning("pstart$to changed to integer")

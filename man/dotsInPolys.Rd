@@ -28,7 +28,7 @@ dotsInPolys(pl, x, f = csr)
 \seealso{\code{\link[splancs]{csr}}, \code{\link[splancs]{gridpts}}}
 \examples{
 x <- read.shape(system.file("shapes/sids.shp", package="maptools")[1])
-ncpolys <- Map2poly(x, raw=FALSE)
+ncpolys <- Map2poly(x)
 try1 <- dotsInPolys(ncpolys, as.integer(x$att.data$SID74))
 plot(ncpolys)
 xx <- lapply(try1, function(x) {if (!is.null(x)) points(x, pch=18, col="red")})

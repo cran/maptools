@@ -1,4 +1,4 @@
-# Copyright 2003-4 (c) Roger Bivand
+# Copyright 2003-5 (c) Roger Bivand
 
 subset.polylist <- function(x, subset, fit.bbox=TRUE, ...) {
 	if (!inherits(x, "polylist")) stop("x not a polylist object")
@@ -10,7 +10,9 @@ subset.polylist <- function(x, subset, fit.bbox=TRUE, ...) {
 	old.ids <- 1:length(x)
 	new.ids <- match(old.ids, which(subset))
 	after <- new.ids[subset.default(attr(x, "after"), subset)]
-	pO <- order(after, na.last=FALSE)
+	area <- sapply(res, function(x) attr(x, "area"))
+	pO <- order(area, decreasing=TRUE)
+
 	attr(res, "after") <- after
 	attr(res, "plotOrder") <- pO
 	class(res) <- "polylist"

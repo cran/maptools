@@ -30,7 +30,7 @@ The function returns a list of matrices of point coordinates, one matrix for eac
 
 \examples{
 x <- read.shape(system.file("shapes/sids.shp", package="maptools")[1])
-ncpolys <- Map2poly(x, raw=FALSE)
+ncpolys <- Map2poly(x)
 np <- sapply(ncpolys, function(x) attr(x, "nPart"))
 symbs <- c("-", "+", "*")
 try1 <- symbolsInPolys(ncpolys, 70, symb=symbs[np])
