@@ -15,14 +15,14 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Create polygon lists and bounding boxes from imported shapefiles}
 \description{
-  Map2poly() is a simple function to make imported GIS vector polygons into a "polylist" object from a "Map" object, and Map2bbs() retrieves polygon bounding boxes; analogous functions for the "shapefiles" package are shape2poly() and shape2bbs() (thanks to Stéphane Dray for his contribution); convert.pl() serves to convert the deprecated "multipart" "polylist" format to an NA-separated format now used by plot() for polylist objects and poly2nb(). 
+  Map2poly() is a function to make imported GIS vector polygons into a "polylist" object from a "Map" object. Map2bbs() retrieves polygon bounding boxes; analogous functions for the "shapefiles" package are shape2poly() and shape2bbs() (thanks to Stéphane Dray for his contribution); convert.pl() serves to convert the deprecated "multipart" "polylist" format to an NA-separated format now used by plot() for polylist objects and poly2nb(). 
 %\code{ringDir()} attempts to find out whether polygon ring 
 %coordinates run clockwise (external boundary of polygon object), or 
 %anti-clockwise (internal boundary - hole). 
 \code{*2lines()} and \code{*2points()} do the same as \code{*2poly()} for shapefiles of types 3=lines and 1=points; polygons are type=5.
 }
 \usage{
-Map2poly(Map, region.id = NULL)
+Map2poly(Map, region.id = NULL, raw=TRUE)
 Map2lines(Map)
 Map2points(Map)
 %Map2maplim(Map)
@@ -40,16 +40,17 @@ convert.pl(pl)
   \item{Map}{object of class \code{"Map"}, imported from a GIS polygon vector file using unpublished package "maptools"}
   \item{shape}{list returned by \code{read.shapefile()}, imported from a GIS polygon vector file using the package "shapefiles"}
   \item{region.id}{character vector of region ids to be added to the neighbours list as attribute \code{region.id}}
+  \item{raw}{default TRUE \emph{until next release}, if TRUE, do not run sanity check for ring directions implying holes in no surrounding polygon}
   \item{pl}{list of old-style multipart polygons of class \code{polylist}}
 %  \item{xy}{the coordinate object for a single member of a polygon list}
 %  \item{ring}{the ring (one of \code{1:attr(xy, "nParts"))} index number}
 }
 \details{
-  \url{http://sal.agecon.uiuc.edu/datasets/columbus.zip}
+  From the current release \code{Map2poly} tries to determine a plotting order for multiple parts of a single polygon object, and for lists of polygon objects to avoid overplotting. It also tries to respect the ESRI-stipulated rule that lakes are anti-clockwise and islanda are clockwise: \url{http://shapelib.maptools.org/dl/shapefile.pdf}: "The order of vertices or orientation for a ring indicates which side of the ring is the interior of the polygon. The neighborhood to the right of an observer walking along the ring in vertex order is the neighborhood inside the polygon. Vertices of rings defining holes in polygons are in a counterclockwise direction. Vertices for a single, ringed polygon are, therefore, always in clockwise order" (p.8). If raw=FALSE, ans additional attempt is made to enforce the final stipulation, where the polygon's bounding box does not fall wholly inside the bounding box of another polygon. This may generate warnings indicating when this has taken place, indicating an unexpected ring direction in the imported shapefile.
 }
 
 \value{
-  \code{Map2poly}, \code{shape2poly}, \code{convert.pl} return polylist objects, lists of polygon boundary coordinates (divided by NA where the polygon object is represented by more than one polygon);
+  \code{Map2poly}, \code{shape2poly}, \code{convert.pl} return polylist objects, lists of polygon boundary coordinates (divided by NA where the polygon object is represented by more than one polygon) with many attributes;
   \code{Map2lines}, \code{shape2lines} return lineslist objects;
   \code{Map2points}, \code{shape2points} return (n x 2) matrices; and
   \code{Map2bbs}, \code{shape2bbs} return bounding box matrixes, c(x1, y1, x2, y2) with coordinates for the lower left corner and upper right corner.
@@ -83,8 +84,8 @@ if (class(shp) != "try-error") {
 }
 try2 <- read.shape(system.file("shapes/columbus.shp", 
   package="maptools")[1])
-mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO))
-plot(mappolys)
+mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO), raw=FALSE)
+plot(mappolys, forcefill=FALSE)
 title(main="Polygons for Columbus OH from maptools package")
 if (class(shp) != "try-error") {
   plot(shppolys)

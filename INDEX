@@ -1,4 +1,5 @@
 get.Pcent               Polygon centroids
+gpcholes                Hisaji Ono's lake/hole problem
 Map2poly                Create polygon lists and bounding boxes from
                         imported shapefiles
 plot.Map                Plot a Map object
