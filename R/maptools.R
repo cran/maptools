@@ -318,12 +318,22 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 	attr(res, "maplim") <- Map2maplim(Map)
 	pO <- as.integer(1:attr(Map$Shapes,'nshps'))
 	after <- as.integer(rep(NA, attr(Map$Shapes,'nshps')))
-	r1 <- .mtInsiders(res)
+	rD <- sapply(res, function(x) 
+		attr(x, "ringDir")[attr(x, "plotOrder")[1]])
+	r1 <- .mtInsiders(res, rD)
 	if (!all(sapply(r1, is.null))) {
-		after <- as.integer(sapply(r1, 
-			function(x) ifelse(is.null(x), NA, max(x))))
-		pO <- order(after, na.last=FALSE)
+		lres <- .mtlbuild(.mtafters(r1), rD)
+		pO <- lres$pO
+		after <- lres$after
 	}
+#	pO <- as.integer(1:attr(Map$Shapes,'nshps'))
+#	after <- as.integer(rep(NA, attr(Map$Shapes,'nshps')))
+#	r1 <- .mtInsiders(res)
+#	if (!all(sapply(r1, is.null))) {
+#		after <- as.integer(sapply(r1, 
+#			function(x) ifelse(is.null(x), NA, max(x))))
+#		pO <- order(after, na.last=FALSE)
+#	}
 	attr(res, "after") <- after
 	attr(res, "plotOrder") <- pO
 	if (!raw) {
@@ -351,7 +361,7 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 	res
 }
 
-.mtInsiders <- function(pl) {
+.mtInsiders <- function(pl, rD) {
 	bbox1 <- function(x) {
 		r1 <- range(x[,1], na.rm=TRUE)
 		r2 <- range(x[,2], na.rm=TRUE)
@@ -364,9 +374,189 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 	for (i in 1:n) bbs[i,] <- bbox1(pl[[i]])
 	res <- .Call("mtInsiders", as.integer(n), as.double(bbs), 
 		PACKAGE="maptools")
+	res1 <- vector(mode="list", length=n)
+
+	for (i in 1:n) {
+		if (!is.null(res[[i]])) {
+			ri <- res[[i]]
+			ixc <- pl[[i]][1,1]
+			iyc <- pl[[i]][1,2]
+			int <- logical(length(ri))
+			for (j in 1:length(ri)) {
+				xj <- pl[[ri[j]]]
+				jxc <- na.omit(xj[,1])
+				jyc <- na.omit(xj[,2])
+				pip <- mt.point.in.polygon(ixc, iyc, jxc, 
+					jyc)
+				int[j] <- ((pip == 1) | 
+					((pip > 1) & ((rD[i] == 1) & 
+					(rD[ri[j]] == -1))))
+
+			}
+			rj <- ri[int]
+			if (length(rj) > 0) {
+				res1[[i]] <- as.integer(rj)
+			}
+		}
+	}
+	res1
+}
+
+.mtafters <- function(rl) {
+
+# argument is output from .insiders() - a list with either NULL components 
+# (not included in any other polygon) or lists of polygons in which the polygon
+# in question is included; outputs a from:to matrix
+
+	n <- length(rl)
+	res <- NULL
+	for (i in 1:n) {
+		if (is.null(rl[[i]]))
+			res <- rbind(res, c(i, NA))
+		else {
+			for (j in 1:length(rl[[i]])) {
+				res <- rbind(res, c(i, rl[[i]][j]))
+			}
+		}
+	}
 	res
 }
 
+.mtlbuild1 <- function(x) {
+
+# reverse list builder with from:to matrix as argument, used to try to find
+# circularities
+
+	lx <- vector(mode="list", length=length(unique(x[,1])))
+	rle.x <- rle(x[,1])
+	cs1.x <- cumsum(rle.x$lengths)
+	cs0.x <- c(1, cs1.x[1:(length(lx)-1)]+1)
+	ii <- 1
+	for (i in 1:length(lx)) {
+		if (rle.x$value[ii] == i) {
+			lx[[i]] <- as.integer(x[cs0.x[ii]:cs1.x[ii],2])
+			ii <- ii+1
+		}
+	}
+	lx
+}
+
+.mtcircs <- function(x) {
+
+# try to find circularities from reverse list as argument (polygons reported
+# as being inside each other despite checking ring direction in .insiders);
+# only the first loop will be run in normal cases
+
+	res <- NULL
+	for (i in 1:length(x)) {
+		if (!is.na(match(i, unlist(x[x[[i]]])))) {
+			hits <- rep(FALSE, length(x[[i]]))
+			for (j in 1:length(hits)) {
+				jj <- x[[i]][j]
+				hits[j] <- (i %in% x[[jj]])
+			}
+			if (length(which(hits)) > 1) stop("multiple circulars")
+			pair <- c(i, x[[i]][hits])
+			res <- rbind(res, pair)
+		}			
+	}
+	res1 <- NULL
+	if (!is.null(res)) {
+		if (nrow(res) %% 2 != 0) stop("odd circulars")
+		gone <- rep(FALSE, nrow(res))
+		for (i in 1:nrow(res)) {
+			if (!gone[i]) {
+				from <- res[i,1]
+				to <- res[i,2]
+				hit <- match(from, res[,2])
+				if (!gone[hit]) {
+					if (res[hit,1] != to) 
+						stop("mismatched circular")
+					res1 <- rbind(res1, c(from, to))
+					gone[i] <- TRUE
+				}
+			}
+		}
+	}
+	res1
+}
+
+.mtlbuild <- function(x, rD) {
+
+# list analysis of matrix output from .afters combined with current ring
+# directions (which may be quite wrong) to generate a plot order and 
+# vector of afters (NA for no dependency, 1 for dependency on being plotted
+# after another polygon)
+
+	ids <- x[,1]
+	ins <- x[,2]
+	n <- length(unique(ids))
+	nas <- which(is.na(ins))
+	ntop <- length(nas)
+	pO <- vector(length=n, mode="integer")
+	after <- rep(as.integer(NA), length=n)
+	gone <- rep(FALSE, n)
+	j <- 1
+	for (i in 1:ntop) {
+		ii <- ids[nas[i]]
+		if (!gone[ii]) {
+			gone[ii] <- TRUE
+			pO[j] <- ii
+			j <- j+1
+		} else warning(paste("level 1 circularity at", ii))
+		ihits <- which(ins == ii)
+
+# for each top level (not inside any other) polygon, check to see if any
+# polygons are inside it, and insert orders to match; from outer to deepest in;
+# the gone vector is used to avoid multiple assignments to the plot
+# order list that can happen with circularity
+
+		if (length(ihits) > 0) {
+			tihits <- ids[ihits]
+			rtihits <- rle(ids[ids %in%tihits])
+			o <- order(rtihits$lengths)
+			for (jj in 1:length(rtihits$values)) {
+				jjj <- rtihits$values[o][jj]
+				if (!gone[jjj]) {
+					gone[jjj] <- TRUE
+					pO[j] <- jjj
+					j <- j+1
+				} else warning(paste("level 2 circularity at", 
+					jjj))
+				after[jjj] <- as.integer(1)
+			}
+		}
+	}
+	xcircs <- .mtcircs(.mtlbuild1(x))
+
+# Further attempts to trap circularities, possibly no longer needed, first
+# introduced before point-in-polygon test added to .insiders; TODO check
+# whether is.null(xcircs) is always TRUE
+
+	if (!is.null(xcircs)) {
+		for (i in 1:nrow(xcircs)) {
+			from <- xcircs[i,1]
+			to <- xcircs[i,2]
+			rDfrom <- rD[from]
+			rDto <- rD[to]
+			pOfrom <- which(pO == from)
+			pOto <- which(pO == to)
+			if (rDfrom == 1) {
+				if (pOfrom < pOto) {
+					pO[pOto] <- from
+					pO[pOfrom] <- to
+				}
+			}
+			if (rDto == 1) {
+				if (pOfrom > pOto) {
+					pO[pOto] <- from
+					pO[pOfrom] <- to
+				}
+			}			
+		}
+	}
+	list(pO=pO, after=after)
+}
 
 .get.polylist <- function(Map, region.id=NULL, raw=TRUE) {
 	n <- attr(Map$Shapes,'nshps')
@@ -424,26 +614,32 @@ Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 		from[j] <- from[j] + (j-1)
 		to[j] <- to[j] + (j-1)
 	}
+	attr(res, "nParts") <- nParts
+	attr(res, "pstart") <- list(from=from, to=to)
+	attr(res, "bbox") <- as.vector(attr(shp, "bbox"))
+	attr(res, "RingDir") <- as.vector(attr(shp, "RingDir"))
+	rD <- integer(nParts)
+	for (j in 1:nParts) rD[j] <- ringDir(res, j)
+	attr(res, "ringDir") <- rD
 	pO <- as.integer(1:nParts)
 	after <- as.integer(rep(NA, nParts))
 	res1 <- vector(mode="list", length=nParts)
 	for (i in 1:nParts) res1[[i]] <- res[from[i]:to[i],]
-	r1 <- .mtInsiders(res1)
+	r1 <- .mtInsiders(res1, rD)
 	if (!all(sapply(r1, is.null))) {
-		after <- as.integer(sapply(r1, 
-			function(x) ifelse(is.null(x), NA, max(x))))
-		pO <- order(after, na.last=FALSE)
+		lres <- .mtlbuild(.mtafters(r1), rD)
+		pO <- lres$pO
+		after <- lres$after
 	}
+#	r1 <- .mtInsiders(res1)
+#	if (!all(sapply(r1, is.null))) {
+#		after <- as.integer(sapply(r1, 
+#			function(x) ifelse(is.null(x), NA, max(x))))
+#		pO <- order(after, na.last=FALSE)
+#	}
 
 	attr(res, "after") <- after
 	attr(res, "plotOrder") <- pO
-	attr(res, "pstart") <- list(from=from, to=to)
-	attr(res, "bbox") <- as.vector(attr(shp, "bbox"))
-	attr(res, "RingDir") <- as.vector(attr(shp, "RingDir"))
-	attr(res, "nParts") <- nParts
-	rD <- integer(nParts)
-	for (j in 1:nParts) rD[j] <- ringDir(res, j)
-	attr(res, "ringDir") <- rD
 	if (!raw) {
 		top <- which(pO == 1)
 		if (any((rD[-top] == -1) & is.na(after[-top]))) {
