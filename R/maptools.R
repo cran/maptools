@@ -3,9 +3,15 @@
 # shape2poly based on code by Stéphane Dray
 
 plot.polylist <- function(x, col, border=par("fg"), add=FALSE, 
-	xlim=NULL, ylim=NULL, xpd=NULL, density=NULL, angle=45, ...) {
+	xlim=NULL, ylim=NULL, xpd=NULL, density=NULL, angle=45, 
+	pbg=par("bg"), forcefill=TRUE, ...) {
 	if (!inherits(x, "polylist")) stop("Not a polygon list")
 
+	usrpoly <- function(x) {
+		p <- matrix(c(x[1], x[2], x[2], x[1], x[3], x[3], 
+			x[4], x[4]), ncol=2)
+		p
+	}
 	if (!add) {
 		maplim <- attr(x, "maplim")
 		if (is.null(maplim))
@@ -15,7 +21,10 @@ plot.polylist <- function(x, col, border=par("fg"), add=FALSE,
 		if (is.null(ylim)) ylim <- maplim$y
 		plot(x=xlim, y=ylim, xlim=xlim, ylim=ylim, type="n",
 			asp=1, xlab="", ylab="", ...)
+		polygon(usrpoly(par("usr")), col = pbg, border = NA)
 	}
+	pO <- attr(x, "plotOrder")
+	if (is.null(pO)) pO <- 1:length(x)
 	if (missing(col)) {
 		if (length(density) != length(x)) {
 			density <- rep(density, length(x), length(x))
@@ -23,17 +32,55 @@ plot.polylist <- function(x, col, border=par("fg"), add=FALSE,
 		if (length(angle) != length(x)) {
 			angle <- rep(angle, length(x), length(x))
 		}
-		for (j in 1:length(x)) polygon(x[[j]], 
-		border=border, xpd=xpd, density=density[j], angle=angle[j])
+		for (j in pO) polygonholes(x[[j]], border=border, 
+			xpd=xpd, density=density[j], angle=angle[j], pbg=pbg,
+			forcefill=forcefill)
 	} else {
 		if (length(col) != length(x)) {
 			col <- rep(col, length(x), length(x))
 		}
-		for (j in 1:length(x)) 
-			polygon(x[[j]], col=col[j],
-				border=border, xpd=xpd)
+		for (j in pO) 
+			polygonholes(x[[j]], col=col[j], border=border, 
+			xpd=xpd, pbg=pbg, forcefill=forcefill)
+	}
+	if (forcefill) warning("From next release, default fill behaviour will change")
+}
+
+polygonholes <- function(coords, col=NA, border=NULL, xpd=NULL, density=NULL,
+	angle=45, pbg=par("bg"), forcefill=TRUE) {
+	nParts <- attr(coords, "nParts")
+	if (is.null(nParts)) nParts <- 1
+	pFrom <- attr(coords, "pstart")$from
+	if (is.null(pFrom)) pFrom <- 1
+	pTo <- attr(coords, "pstart")$to
+	if (is.null(pTo)) pTo <- dim(coords)[1]
+	if (is.na(col)) hatch <- TRUE
+	else hatch <- FALSE
+	pO <- attr(coords, "plotOrder")
+	if (is.null(pO)) pO <- 1:nParts
+	for (i in pO) {
+		if (hatch) {
+			if (forcefill || attr(coords, "ringDir")[i] == 1) {
+				polygon(coords[pFrom[i]:pTo[i],], 
+				border = border, xpd = xpd, 
+				density = density, angle = angle)
+			} else { 
+				polygon(coords[pFrom[i]:pTo[i],], 
+				border = border, xpd = xpd, col=pbg, 
+				density = NULL)
+			}
+		} else {
+			if (forcefill || attr(coords, "ringDir")[i] == 1) {
+				polygon(coords[pFrom[i]:pTo[i],], 
+					border = border, xpd = xpd, col=col)
+			} else {
+				polygon(coords[pFrom[i]:pTo[i],], 
+					border = border, xpd = xpd, col=pbg)
+			}
+		}
 	}
 }
+
 
 plotpolys <- function(pl, bb, col=NA, border=par("fg"), add=FALSE, 
 	xlim=NULL, ylim=NULL, ...) {
@@ -164,7 +211,12 @@ ringDir <- function(xy, ring) {
       		dx1 = a[ti+1] - a[ti]
       		dy0 = b[ti-1] - b[ti]
       		dy1 = b[ti+1] - b[ti]
-   	} else {
+   	} else if (ti == nvx) {
+		dx0 = a[ti-1] - a[ti]
+      		dx1 = a[1] - a[ti]
+      		dy0 = b[ti-1] - b[ti]
+      		dy1 = b[1] - b[ti]
+	} else {
 #   /* if the tested vertex is at the origin then continue from 0 (1) */ 
      		dx1 = a[2] - a[1]
       		dx0 = a[nvx] - a[1]
@@ -258,36 +310,86 @@ Map2points <- function(Map) {
 }
 
 
-Map2poly <- function(Map, region.id=NULL) {
+Map2poly <- function(Map, region.id=NULL, raw=TRUE) {
 	if (class(Map) != "Map") stop("not a Map")
 	if (attr(Map$Shapes,'shp.type') != 'poly')
 		stop("maptype not poly")
-	res <- .get.polylist(Map=Map, region.id=region.id)
+	res <- .get.polylist(Map=Map, region.id=region.id, raw=raw)
 	attr(res, "maplim") <- Map2maplim(Map)
+	pO <- as.integer(1:attr(Map$Shapes,'nshps'))
+	after <- as.integer(rep(NA, attr(Map$Shapes,'nshps')))
+	r1 <- .mtInsiders(res)
+	if (!all(sapply(r1, is.null))) {
+		after <- as.integer(sapply(r1, 
+			function(x) ifelse(is.null(x), NA, max(x))))
+		pO <- order(after, na.last=FALSE)
+	}
+	attr(res, "after") <- after
+	attr(res, "plotOrder") <- pO
+	if (!raw) {
+		rD <- sapply(res, function(x) attr(x, 
+			"ringDir")[which(attr(x, "plotOrder") == 1)])
+		if (any((rD == -1) & is.na(after))) {
+			oddCC <- which((rD == -1) & is.na(after))
+			for (i in oddCC) {
+				tgt <- which(attr(res[[i]], "plotOrder") == 1)
+				nParts <- attr(res[[i]], "nParts")
+				tmp <- as.matrix(res[[i]])
+				from <- attr(res[[i]], "pstart")$from[tgt]
+				to <- attr(res[[i]], "pstart")$to[tgt]
+				tmp[from:to,] <- res[[i]][to:from, ]
+ 				attributes(tmp) <- attributes(res[[i]])
+				rD <- vector(length=nParts, mode="integer")
+				for (j in 1:nParts) rD[j] <- ringDir(tmp, j)
+				attr(tmp, "ringDir") <- rD
+				res[[i]] <- tmp
+				warning(paste("ring direction changed in polygon", i))
+			}
+		}
+	}
+	if (raw) warning("From next release, default hole handling will change")
 	res
 }
 
-.get.polylist <- function(Map, region.id=NULL) {
+.mtInsiders <- function(pl) {
+	bbox1 <- function(x) {
+		r1 <- range(x[,1], na.rm=TRUE)
+		r2 <- range(x[,2], na.rm=TRUE)
+		res <- c(r1[1], r2[1], r1[2], r2[2])
+		res
+	}
+
+	n <- length(pl)
+	bbs <- matrix(0, nrow=n, ncol=4)
+	for (i in 1:n) bbs[i,] <- bbox1(pl[[i]])
+	res <- .Call("mtInsiders", as.integer(n), as.double(bbs), 
+		PACKAGE="maptools")
+	res
+}
+
+
+.get.polylist <- function(Map, region.id=NULL, raw=TRUE) {
 	n <- attr(Map$Shapes,'nshps')
 	res <- vector(mode="list", length=n)
 	nParts <- integer(n)
 	for (i in 1:n) nParts[i] <- attr(Map$Shapes[[i]], "nParts")
 	for (i in 1:n) {
-		if (nParts[i] > 1)
-			res[[i]] <- .getMultiShp(Map$Shapes[[i]], nParts[i])
-		else {
+		if (nParts[i] > 1) {
+			res[[i]] <- .getMultiShp(Map$Shapes[[i]], nParts[i], 
+				raw=raw)
+		} else {
 			res[[i]] <- Map$Shapes[[i]]$verts
 			attr(res[[i]], "pstart") <- list(from=1, 
 				to=attr(Map$Shapes[[i]], "nVerts"))
+			attr(res[[i]], "after") <- 1
+			attr(res[[i]], "plotOrder") <- 1
+			attr(res[[i]], "bbox") <- 
+				as.vector(attr(Map$Shapes[[i]], "bbox"))
+			attr(res[[i]], "RingDir") <- 
+				as.vector(attr(Map$Shapes[[i]], "RingDir"))
+			attr(res[[i]], "nParts") <- nParts[i]
+			attr(res[[i]], "ringDir") <- ringDir(res[[i]], 1)
 		}
-		attr(res[[i]], "bbox") <- as.vector(attr(Map$Shapes[[i]],
-			 "bbox"))
-		attr(res[[i]], "RingDir") <- as.vector(attr(Map$Shapes[[i]],
-			"RingDir"))
-		attr(res[[i]], "nParts") <- nParts[i]
-		rD <- integer(nParts[i])
-		for (j in 1:nParts[i]) rD[j] <- ringDir(res[[i]], j)
-		attr(res[[i]], "ringDir") <- rD
 	}
 	if (is.null(region.id) || length(region.id) != n) {
 		attr(res, "region.id") <- as.character(1:n)
@@ -298,7 +400,7 @@ Map2poly <- function(Map, region.id=NULL) {
 	invisible(res)
 }
 
-.getMultiShp <- function(shp, nParts) {
+.getMultiShp <- function(shp, nParts, raw=TRUE) {
 	Pstart <- shp$Pstart
 	nVerts <- attr(shp, "nVerts")
 	from <- integer(nParts)
@@ -322,7 +424,43 @@ Map2poly <- function(Map, region.id=NULL) {
 		from[j] <- from[j] + (j-1)
 		to[j] <- to[j] + (j-1)
 	}
+	pO <- as.integer(1:nParts)
+	after <- as.integer(rep(NA, nParts))
+	res1 <- vector(mode="list", length=nParts)
+	for (i in 1:nParts) res1[[i]] <- res[from[i]:to[i],]
+	r1 <- .mtInsiders(res1)
+	if (!all(sapply(r1, is.null))) {
+		after <- as.integer(sapply(r1, 
+			function(x) ifelse(is.null(x), NA, max(x))))
+		pO <- order(after, na.last=FALSE)
+	}
+
+	attr(res, "after") <- after
+	attr(res, "plotOrder") <- pO
 	attr(res, "pstart") <- list(from=from, to=to)
+	attr(res, "bbox") <- as.vector(attr(shp, "bbox"))
+	attr(res, "RingDir") <- as.vector(attr(shp, "RingDir"))
+	attr(res, "nParts") <- nParts
+	rD <- integer(nParts)
+	for (j in 1:nParts) rD[j] <- ringDir(res, j)
+	attr(res, "ringDir") <- rD
+	if (!raw) {
+		top <- which(pO == 1)
+		if (any((rD[-top] == -1) & is.na(after[-top]))) {
+			oddCC <- which((rD == -1) & is.na(after))
+			for (i in oddCC) {
+				if (i != top) {
+					from1 <- from[i]
+					to1 <- to[i]
+					res[from[i]:to[i],] <- res[to[i]:from[i],]
+					attr(res, "ringDir")[i] <- ringDir(res, i)
+					warning(paste("ring direction changed in subpolygon"))
+				}
+			}
+		}
+
+
+	}
 	res
 }
 

@@ -1,16 +1,16 @@
-% Copyright 2001-3 by Roger S. Bivand
+% Copyright 2001-4 by Roger S. Bivand
 \name{plot.polylist}
 \alias{plotpolys}
 \alias{plot.polylist}
 \alias{leglabs}
 \title{Plot polygons}
 \description{
-A helper function for plotting polygons in a global bounding box. 
+A helper function for plotting polygons in a global bounding box, attempts to handle overplotting internally, holes should be coded by coordinates ordered anti-clockwise. Earlier behaviour requires forcefill=TRUE; this is now default, but will cease to be so from next release. Changes caused by some imported shapefiles data leading to erroneously plotting lakes/islands, and R polygon() overplotting internal polygons. 
 \code{leglabs} makes character strings from the same break points. The \code{plot.polylist()} function may be used as a generic S3 method. NOTE! \code{plotpolys()} DEPRECATED: use generic plot() for polylist objects function instead.
 }
 \usage{
 plot.polylist(x, col, border = par("fg"), add = FALSE, xlim=NULL,
- ylim=NULL, xpd = NULL, density = NULL, angle = 45, ...)
+ ylim=NULL, xpd = NULL, density = NULL, angle = 45, pbg=par("bg"), forcefill=TRUE, ...)
 leglabs(vec, under="under", over="over", between="-")
 plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
 }
@@ -25,6 +25,8 @@ plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
   \item{xpd}{(where) should clipping take place?}
   \item{density}{the density of shading lines, in lines per inch}
   \item{angle}{the slope of shading lines, given as an angle in degrees (counter-clockwise)}
+  \item{pbg}{colour to be used for hole and background fill (note that default par("bg") may be "transparent")}
+  \item{forcefill}{default TRUE \emph{until next release} - fill anyway, if FALSE: believe ring direction as indication of holes/lakes}
   \item{...}{other arguments passed to plot to set the plot window - not passed to polygon}
   \item{vec}{vector of break values}
   \item{under}{character value for under}
@@ -40,21 +42,21 @@ plotpolys(pl, bb, col = NA, border = par("fg"), add = FALSE, xlim, ylim, ...)
 
 \examples{
 try2 <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
-mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO))
+mappolys <- Map2poly(try2, as.character(try2$att.data$NEIGNO), raw=FALSE)
 brks <- round(quantile(try2$att.data$CRIME, probs=seq(0,1,0.2)), digits=2)
 colours <- c("salmon1", "salmon2", "red3", "brown", "black")
-plot(mappolys, col=colours[findInterval(try2$att.data$CRIME, brks)])
+plot(mappolys, col=colours[findInterval(try2$att.data$CRIME, brks, all.inside=TRUE)], forcefill=FALSE)
 legend(x=c(5.8, 7.1), y=c(13, 14.5), legend=leglabs(brks),
   fill=colours, bty="n")
 title(main=paste("Columbus OH: residential burglaries and vehicle\nthefts",
   "per thousand households, 1980"))
 try3 <- read.shape(system.file("shapes/sids.shp", package="maptools")[1])
-mappolys <- Map2poly(try3, as.character(try3$att.data$FIPSNO))
-cols <- c("white", "orange", "red")
+mappolys <- Map2poly(try3, as.character(try3$att.data$FIPSNO), raw=FALSE)
+cols <- c("pink", "orange", "red")
 np <- integer(length(mappolys))
 for (i in 1:length(mappolys)) np[i] <- attr(mappolys[[i]], "nPart")
-plot(mappolys, col=cols[np])
+plot(mappolys, col=cols[np], forcefill=FALSE)
 title(main="White: one part, orange: two part, red: three part polygons")
-plot(mappolys, density=c(10, 20, 30)[np], angle=c(-45, 0, 45)[np], axes=FALSE)
+plot(mappolys, density=c(10, 20, 30)[np], angle=c(-45, 0, 45)[np], axes=FALSE, forcefill=FALSE)
 }
 \keyword{spatial}
