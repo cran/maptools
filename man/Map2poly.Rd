@@ -57,7 +57,7 @@ convert.pl(pl)
 
 \author{Roger Bivand and Stéphane Dray, \email{Roger.Bivand@nhh.no}}
  
-\seealso{\code{\link{read.shape}}, \code{\link{read.shapefile}}}
+\seealso{\code{\link{read.shape}}, \code{\link[shapefiles]{read.shapefile}}}
 
 
 \examples{

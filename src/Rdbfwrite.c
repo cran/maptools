@@ -37,7 +37,7 @@
 #include "maptools.h"
 
 #include <R_ext/PrtUtil.h>
-#include <R_ext/Mathlib.h>
+#include <Rmath.h>
 
 
 DBFHandle Rdbfwrite(DBFHandle, SEXP, int);
