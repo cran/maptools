@@ -2,4 +2,5 @@
 #          library.dynam("maptools", pkg, lib)
 #}
 .noGenerics <- TRUE
+maptools()
 

@@ -8,7 +8,7 @@
   Read shapefile into Map object; the file should be given including its ".shp" extension, and the function will reconstruct the names of the database (dbf) file and the index (shx) file from these.
 }
 \usage{
-read.shape(filen, dbf.data = TRUE)
+read.shape(filen, dbf.data = TRUE, verbose=TRUE)
 %dbf.read(filen)
 getinfo.shape(filen)
 }
@@ -16,6 +16,7 @@ getinfo.shape(filen)
 \arguments{
   \item{filen}{name of file with *.shp extension, or *.dbf for dbf.read()}
   \item{dbf.data}{read DBF data together with shapes, default TRUE}
+  \item{verbose}{default TRUE --- report type of shapefile and number of shapes}
 }
 \details{
   The function calls code from shapelib to read shapefiles, a file format used by ESRI GIS software among others

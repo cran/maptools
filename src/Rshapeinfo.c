@@ -36,11 +36,11 @@ void Rshapeinfo(char **shpnm, int *Shapetype, int *Entities, double
         MaxBound[i]=adfMaxBound[i];
     }
 
-    Rprintf ("Info for %s\n", shpnm[0]);
+/*    Rprintf ("Info for %s\n", shpnm[0]);
     Rprintf("Shapefile Type: %s(%d)   # of Shapes: %ld\n\n",
             SHPTypeName( nShapeType ), nShapeType, nEntities );
     Rprintf("File Bounds: (%15.10lg,%15.10lg)\n\t(%15.10lg,%15.10lg)\n",
-	    MinBound[0], MinBound[1], MaxBound[0], MaxBound[1] );
+	    MinBound[0], MinBound[1], MaxBound[0], MaxBound[1] );*/
     
 
     SHPClose( hSHP );   
