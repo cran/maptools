@@ -86,10 +86,10 @@ SEXP Rdbfread(SEXP);
 SEXP Rdbfread(SEXP dbfnm)
 {
     DBFHandle	hDBF;
-    int		 i, iRecord, nflds, nrecs, nRvar;
+    int		 i, iRecord, nflds, nrecs, nRvar, pc=0, maxWid=0;
     char	labelbuff[81], *pszFilename = NULL;
     int		nWidth, nDecimals;
-    char	szTitle[12], szBuff[50];
+    char	szTitle[12], *szBuff;
     DBFFieldType	eType;
     SEXP       df, tmp, varlabels, types, row_names;
 
@@ -127,7 +127,7 @@ SEXP Rdbfread(SEXP dbfnm)
     nRvar=0;
     nflds=DBFGetFieldCount(hDBF);
     nrecs=DBFGetRecordCount(hDBF);
-    PROTECT(types=allocVector(INTSXP,nflds));
+    PROTECT(types=allocVector(INTSXP,nflds)); pc++;
     for( i = 0; i < nflds; i++ )
     {
 	eType = DBFGetFieldInfo( hDBF, i, szTitle, &nWidth, &nDecimals );
@@ -149,12 +149,15 @@ SEXP Rdbfread(SEXP dbfnm)
 	{
 	  INTEGER(types)[i]= 0;
       	}
-/*  	Rprintf( "Field %d: Title=`%s', Width=%d, Decimals=%d\n", */
-/*  		   i, nameMangle(szTitle,12), nWidth, nDecimals ); */
+	if (nWidth > maxWid) maxWid = nWidth;
+/*  	Rprintf( "Field %d: Title=`%s', Width=%d, Decimals=%d\n", 
+  		   i, szTitle, nWidth, nDecimals ); */
     }
 /*      Rprintf("%d fields, %d recs \n",nflds,nrecs); */
-    PROTECT(df=allocVector(VECSXP, nRvar));
-    PROTECT(varlabels=allocVector(STRSXP, nRvar)); 
+    maxWid = maxWid*2 + 10;
+    
+    PROTECT(df=allocVector(VECSXP, nRvar)); pc++;
+    PROTECT(varlabels=allocVector(STRSXP, nRvar)); pc++; 
     for(i=0, nRvar=0; i<nflds; i++){
       eType = DBFGetFieldInfo( hDBF, i, szTitle, &nWidth, &nDecimals );
       if(INTEGER(types)[i]==0) continue;
@@ -178,7 +181,7 @@ SEXP Rdbfread(SEXP dbfnm)
       }
     }
 
-
+    szBuff = (char *) R_alloc((long) maxWid, sizeof(char));
     
     for(iRecord=0; iRecord<nrecs; iRecord++){
       nRvar=0;
@@ -189,7 +192,7 @@ SEXP Rdbfread(SEXP dbfnm)
 	      SET_STRING_ELT(VECTOR_ELT(df, nRvar), iRecord, NA_STRING);
 	    } else {
     	      strcpy(szBuff, DBFReadStringAttribute( hDBF, iRecord, i));
-/*              Rprintf("  %s  ",szBuff); */
+/*              Rprintf("%d: %s\n", i, szBuff); */
   	      SET_STRING_ELT(VECTOR_ELT(df, nRvar), iRecord,  
   	        mkChar(szBuff)); 
 	    }
@@ -218,17 +221,17 @@ SEXP Rdbfread(SEXP dbfnm)
 /*       Rprintf("\n");  */   
     }
     DBFClose( hDBF );
-    PROTECT(tmp = mkString("data.frame"));
+    PROTECT(tmp = mkString("data.frame")); pc++;
     setAttrib(df, R_ClassSymbol, tmp);
     setAttrib(df, R_NamesSymbol, varlabels); 
-    PROTECT(row_names = allocVector(STRSXP, nrecs));
+    PROTECT(row_names = allocVector(STRSXP, nrecs)); pc++;
     for (i=0; i<nrecs; i++) {
         sprintf(labelbuff, "%d", i+1);
         SET_STRING_ELT(row_names,i, mkChar(labelbuff));
     }
     setAttrib(df, R_RowNamesSymbol, row_names);
 
-    UNPROTECT(5);
+    UNPROTECT(pc);
     return(df);
 }
 

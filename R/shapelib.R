@@ -2,8 +2,14 @@
 # modifications 2001-2004 Roger Bivand
 
 
-read.shape <- function(filen, dbf.data=TRUE) {
+read.shape <- function(filen, dbf.data=TRUE, verbose=TRUE) {
   shp.lst <- .Call("Rshapeget", as.character(filen), PACKAGE="maptools")
+  if (verbose) {
+    types <- c("Point", NA, "Line", NA, "Polygon")
+    shinfo <- getinfo.shape(filen)
+    cat("Shapefile Type:", types[shinfo[[2]]], "  # of Shapes:", 
+      shinfo[[3]], "\n\n")
+  }
   n <- length(shp.lst)
   for (i in 1:n) {
     attr(shp.lst[[i]], "nVerts") <- as.integer(shp.lst[[i]]$nVerts)

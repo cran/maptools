@@ -40,8 +40,8 @@ SEXP Rshapeget(SEXP shpnm)
 /*      Print out the file bounds.                                      */
 /* -------------------------------------------------------------------- */
       SHPGetInfo( hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound ); 
-      Rprintf("Shapefile Type: %s   # of Shapes: %d\n\n",
-            SHPTypeName( nShapeType ), nEntities );
+/*      Rprintf("Shapefile Type: %s   # of Shapes: %d\n\n",
+            SHPTypeName( nShapeType ), nEntities );*/
 
         PROTECT(Rshplst=allocVector(VECSXP, nEntities)); pc++;
 
