@@ -27,7 +27,11 @@ plot.polylist <- function(x, col, border=par("fg"), add=FALSE,
 		}
 	}
 	pO <- attr(x, "plotOrder")
-	if (is.null(pO)) pO <- 1:length(x)
+	if (length(x) < 1) stop("zero length polylist")
+	if (is.null(pO) || length(x) != length(pO)) pO <- 1:length(x)
+	pO <- as.integer(pO)
+	if (length(pO) != length(unique(pO))) stop("malformed plot order")
+	if (!identical(sort(pO), sort(1:length(x)))) stop("malformed plot order")
 	if (missing(col)) {
 		if (length(density) != length(x)) {
 			density <- rep(density, length(x), length(x))

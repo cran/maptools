@@ -7,8 +7,9 @@ dotsInPolys <- function(pl, x, f=csr) {
         x <- as.integer(x)
         warning("x coerced to integer")
     }
-    library(splancs)
+    if (!require(splancs)) stop("splancs package required for this function")
     n <- length(pl)
+    if (n < 1) stop("zero length polylist")
     res <- vector(mode="list", length=n)
     for (i in 1:n) {
         if (x[i] > 0) {
@@ -17,7 +18,7 @@ dotsInPolys <- function(pl, x, f=csr) {
                 if (attr(pl[[i]], "ringDir") != 1)
                     warning(paste("hole with content at:", i))
                 res[[i]] <- f(matrix(c(pl[[i]]), ncol=2), x[i])
-            } else {
+            } else if (length(attr(pl[[i]], "nParts")) > 1) {
                 areas <- rep(0, attr(pl[[i]], "nParts"))
                 for (j in 1:attr(pl[[i]], "nParts")) {
                     if (attr(pl[[i]], "ringDir")[j] == 1) {
@@ -37,8 +38,8 @@ dotsInPolys <- function(pl, x, f=csr) {
                         res[[i]] <- rbind(res[[i]], f(pj, px[j]))
                     }
                 }
+                res[[i]] <- matrix(res[[i]], ncol=2)
             }
-            res[[i]] <- matrix(res[[i]], ncol=2)
         }
     }
     res
@@ -48,6 +49,7 @@ symbolsInPolys <- function(pl, dens, symb="+") {
     if (!inherits(pl, "polylist")) stop("not a polylist object")
     library(splancs)
     n <- length(pl)
+    if (n < 1) stop("zero length polylist")
     if (n != length(dens)) dens <- rep(dens[1], n)
     if (n != length(symb)) symb <- rep(symb[1], n)
     areas <- vector(mode="list", n)
@@ -55,7 +57,7 @@ symbolsInPolys <- function(pl, dens, symb="+") {
         if (is.null(attr(pl[[i]], "nParts")) || 
 	    attr(pl[[i]], "nParts") == 1) {
             areas[[i]] <- areapl(matrix(c(pl[[i]]), ncol=2))
-        } else {
+        } else if (length(attr(pl[[i]], "nParts")) > 1) {
             res <- rep(0, attr(pl[[i]], "nParts"))
             for (j in 1:attr(pl[[i]], "nParts")) {
                 if (attr(pl[[i]], "ringDir")[j] == 1) {
@@ -79,7 +81,7 @@ symbolsInPolys <- function(pl, dens, symb="+") {
                 points[[i]] <- gridpts(matrix(c(pl[[i]]), ncol=2), counts[[i]])
                 attr(points[[i]], "symb") <- symb[i]
             }
-        } else {
+        } else if (length(attr(pl[[i]], "nParts")) > 1) {
             for (j in 1:attr(pl[[i]], "nParts")) {
                 px <- counts[[i]][j]
                 if (px > 0) {
