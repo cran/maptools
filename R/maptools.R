@@ -2,9 +2,10 @@
 # modifications 2001-2004 Roger Bivand, 
 # shape2poly based on code by Stéphane Dray
 
-plot.polylist <- function(x, col=NA, border=par("fg"), add=FALSE, 
-	xlim=NULL, ylim=NULL, ...) {
+plot.polylist <- function(x, col, border=par("fg"), add=FALSE, 
+	xlim=NULL, ylim=NULL, xpd=NULL, density=NULL, angle=45, ...) {
 	if (!inherits(x, "polylist")) stop("Not a polygon list")
+
 	if (!add) {
 		maplim <- attr(x, "maplim")
 		if (is.null(maplim))
@@ -13,12 +14,25 @@ plot.polylist <- function(x, col=NA, border=par("fg"), add=FALSE,
 		if (is.null(xlim)) xlim <- maplim$x
 		if (is.null(ylim)) ylim <- maplim$y
 		plot(x=xlim, y=ylim, xlim=xlim, ylim=ylim, type="n",
-		asp=1, xlab="", ylab="")
+			asp=1, xlab="", ylab="", ...)
 	}
-	if (length(col) != length(x)) {
-		col <- rep(col, length(x), length(x))
+	if (missing(col)) {
+		if (length(density) != length(x)) {
+			density <- rep(density, length(x), length(x))
+		}
+		if (length(angle) != length(x)) {
+			angle <- rep(angle, length(x), length(x))
+		}
+		for (j in 1:length(x)) polygon(x[[j]], 
+		border=border, xpd=xpd, density=density[j], angle=angle[j])
+	} else {
+		if (length(col) != length(x)) {
+			col <- rep(col, length(x), length(x))
+		}
+		for (j in 1:length(x)) 
+			polygon(x[[j]], col=col[j],
+				border=border, xpd=xpd)
 	}
-	for (j in 1:length(x)) polygon(x[[j]], col=col[j], border=border, ...)
 }
 
 plotpolys <- function(pl, bb, col=NA, border=par("fg"), add=FALSE, 
