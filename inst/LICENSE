@@ -4,7 +4,7 @@ possible individual files also carry brief copyright notices.
 Copyrights
 ==========
 
-Files: src/dbfopen.c, src/shapefil.h, src/shpopen.c and shptree.c are
+Files: src/shapefil.h, src/shpopen.c and src/shptree.c are
 copyright (c) 1998 Frank Warmerdam, and released under the conditions
 given in http://shapelib.maptools.org/license.html, with
 default license terms:
@@ -39,14 +39,12 @@ It is the intention of the package maintainer to migrate to linking
 against an external shapelib, rather than incoroprating complete files 
 unchanged in this package.
 
-Files: src/Rcentroid.c, src/Rdbfwrite.c, src/Rshapeinfo.c, src/maptools.h,
-src/Rdbfread.c, and src/Rshapeget.c are copyright (c) 2000-2001 by
-Nicholas Lewin-Koh and are subject to the licence at the foot of this
-file. Some portions of these files are based on shapelib/contrib files,
-and copyright and license conditions follow from the included code
-(RingCentroid_2d, shpcat.c, shpinfo.c, and SHPRingDir_2dCopyright
-(c) 1999, Carl Anderson; dbfdump (modified) Copyright (c) 1999, Frank
-Warmerdam
+Files: src/Rcentroid.c, src/Rshapeinfo.c, src/maptools.h, and
+src/Rshapeget.c are copyright (c) 2000-2001 by Nicholas Lewin-Koh and are
+subject to the licence at the foot of this file. Some portions of these
+files are based on shapelib/contrib files, and copyright and license
+conditions follow from the included code: RingCentroid_2d, shpcat.c,
+shpinfo.c, and SHPRingDir_2d Copyright (c) 1999, Carl Anderson
 
 Files: inst/shapes/baltim.*, inst/shapes/columbus.*, and inst/shapes/sids.* 
 are derived by permission from SAL data files
@@ -64,7 +62,7 @@ were released (with a collection of other shapefiles) to the public domain
 in July 2001. The link to the relevant page under http://www.statkart.no
 has now expired, this copy downloaded 13 July 2001.
 
-All other files are copyright (c) 2001-2003 Roger S. Bivand and Nicholas
+All other files are copyright (c) 2001-2004 Roger S. Bivand and Nicholas
 Lewin-Koh, and are subject to the licence at the foot of this file.
 
 Licence

@@ -16,7 +16,7 @@ write.polylistShape(polylist, df, file, factor2char = TRUE)
   \item{factor2char}{logical, default TRUE, convert factor columns to character}
 }
 \details{
-  The function calls code from shapelib to write a point-type shapefile (both the geometry file with a *.shp extension, the index file with a *.shx extension, and the database file with a *.dbf extension - see \code{\link{dbf.write}} for details of the data frame export within this function.
+  The function calls code from shapelib to write a point-type shapefile (both the geometry file with a *.shp extension, the index file with a *.shx extension, and the database file with a *.dbf extension - see \code{\link[foreign]{write.dbf}} for details of the data frame export within this function.
 }
 \value{
   no return value.
@@ -27,7 +27,7 @@ write.polylistShape(polylist, df, file, factor2char = TRUE)
 
 \note{From maptools 0.4-7, this function is placed in the user-visible namespace on a trial basis, and reports of any malfunction should be sent to the package maintainer, Roger Bivand \email{Roger.Bivand@nhh.no}. It is likely that this function and its arguments will be changed.}
 
-\seealso{\code{\link{write.pointShape}}, \code{\link{dbf.write}}}
+\seealso{\code{\link{write.pointShape}}, \code{\link[foreign]{write.dbf}}}
 \examples{
 col_orig <- read.shape(system.file("shapes/columbus.shp", package="maptools")[1])
 mappolys <- Map2poly(col_orig, as.character(col_orig$att.data$NEIGNO), raw=FALSE)

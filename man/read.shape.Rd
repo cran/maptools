@@ -31,7 +31,7 @@ read.shape() returns either a list of shapes of class ShapeList, or if dbf.data 
 \references{\url{http://shapelib.maptools.org/}}
 \author{Nicholas J. Lewin-Koh, modified by Roger Bivand \email{Roger.Bivand@nhh.no}; shapelib by Frank Warmerdam}
 
-\seealso{\code{\link{plot.Map}}}
+\seealso{\code{\link{plot.Map}}, \code{\link[foreign]{read.dbf}}}
 \examples{
 x <- read.shape(system.file("shapes/sids.shp", package="maptools")[1])
 length(x$Shapes)
