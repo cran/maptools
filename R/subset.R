@@ -11,7 +11,9 @@ subset.polylist <- function(x, subset, fit.bbox=TRUE, ...) {
 	new.ids <- match(old.ids, which(subset))
 	after <- new.ids[subset.default(attr(x, "after"), subset)]
 	area <- sapply(res, function(x) attr(x, "area"))
-	pO <- order(area, decreasing=TRUE)
+	if (any(sapply(area, is.null))) 
+		pO <- order(subset.default(attr(x, "plotOrder"), subset))
+	else pO <- order(area, decreasing=TRUE)
 
 	attr(res, "after") <- after
 	attr(res, "plotOrder") <- pO
