@@ -1,15 +1,15 @@
 \name{plot.Map}
 \alias{plot.Map}
-\alias{color.ramp}
+%\alias{color.ramp}
 
 \title{Plot a Map object}
 \description{
-  The function plots a map object
+  The function plots a map object directly from the imported shapefile data.
 }
 \usage{
 plot.Map(x, recs, auxvar = NULL, add = FALSE, fg = "gray", ol = "black", 
   prbg = NULL, glyph = 16, type = "q", nclass = 5, ...)
-color.ramp(nclass, color='red', nvec=NULL, type='q')
+%color.ramp(nclass, color='red', nvec=NULL, type='q')
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,15 +24,15 @@ color.ramp(nclass, color='red', nvec=NULL, type='q')
   \item{type}{default "q" for quantile classes, can also be "e" for equal intervals}
   \item{nclass}{number of classes for class intervals}
   \item{\dots}{passed through to plotting functions}
-  \item{color}{default "red"}
-  \item{nvec}{data vector to convert to class intervals}
+%  \item{color}{default "red"}
+%  \item{nvec}{data vector to convert to class intervals}
 }
 
-\value{
-  color.ramp() returns a list with componemts:
-  \item{ramp}{vector of colours}
-  \item{col.class}{vector of classes}
-}
+%\value{
+%  color.ramp() returns a list with componemts:
+%  \item{ramp}{vector of colours}
+%  \item{col.class}{vector of classes}
+%}
 
 \author{Nicholas J. Lewin-Koh, modified by Roger Bivand \email{Roger.Bivand@nhh.no}}
 

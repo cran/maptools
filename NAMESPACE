@@ -1,0 +1,7 @@
+useDynLib(maptools)
+
+export(leglabs, findInterval2, plotpolys, shape2poly, shape2lines, 
+	shape2points, shape2bbs, Map2poly, Map2lines, Map2points, 
+	Map2bbs, convert.pl, get.Pcent, read.shape, getinfo.shape)
+
+S3method(plot, Map)

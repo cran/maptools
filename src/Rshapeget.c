@@ -308,9 +308,9 @@ SEXP Rshapeget(SEXP shpnm)
       dy0 = b[last_vtx] - b[0];
    }
    
-//   v1 = ( (dy0 * 0) - (0 * dy1) );
-//   v2 = ( (0 * dx1) - (dx0 * 0) );
-/* these above are always zero so why do the math */
+/*   v1 = ( (dy0 * 0) - (0 * dy1) );
+   v2 = ( (0 * dx1) - (dx0 * 0) );
+ these above are always zero so why do the math */
    v3 = ( (dx0 * dy1) - (dx1 * dy0) );
 
 #ifdef DEBUG2   

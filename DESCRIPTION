@@ -1,8 +1,8 @@
 Package: maptools
-Version: 0.2-2
-Date: 2003/08/10
+Version: 0.3-1
+Date: 2003/09/02
 Title: Maptools
-Author: Nicholas J. Lewin-Koh <nikko@hailmail.net>, modified by Roger Bivand <Roger.Bivand@nhh.no>; C code used from shapelib ()
+Author: Nicholas J. Lewin-Koh, modified by Roger Bivand <Roger.Bivand@nhh.no>; C code used from shapelib ()
 Maintainer: Roger Bivand <Roger.Bivand@nhh.no>
 Depends: R (>= 1.6)
 Description: Set of tools for manipulating and reading geographic data, in particular ESRI shapefiles. 
