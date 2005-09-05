@@ -6,7 +6,7 @@
   The function calls code from shapelib to write a polygon-type shapefile from an S3 polylist object.
 }
 \usage{
-write.polylistShape(polylist, df, file, factor2char = TRUE)
+write.polylistShape(polylist, df, file, factor2char = TRUE, strictFilename=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -14,6 +14,7 @@ write.polylistShape(polylist, df, file, factor2char = TRUE)
   \item{df}{a data frame object}
   \item{file}{a file name of maximum 8 chararacters, numbers or the underscore symbol to be written, omitting the extensions *.shp, *.shx and *.dbf, which are added in the function}
   \item{factor2char}{logical, default TRUE, convert factor columns to character}
+  \item{strictFilename}{if TRUE, impose file basename length limit of 8 characters}
 }
 \details{
   The function calls code from shapelib to write a polygon-type shapefile (both the geometry file with a *.shp extension, the index file with a *.shx extension, and the database file with a *.dbf extension - see \code{\link[foreign]{write.dbf}} for details of the data frame export within this function.

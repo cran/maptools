@@ -19,7 +19,7 @@ SEXP Rshapeget(SEXP shpnm)
     SHPHandle	hSHP;
     int    nShapeType, nEntities, i, pc=0;
     double  adfMinBound[4], adfMaxBound[4];
-    int j, vdir=0;
+    int j, pz=0;
     SHPObject *psShape;
 
     SEXP  Rshplst, shplistnms;
@@ -50,21 +50,35 @@ SEXP Rshapeget(SEXP shpnm)
 
         PROTECT(temp0=allocVector(STRSXP, 1)); pc++;
         
-	if(nShapeType==1){ /* Points */
+	if(nShapeType==1){ /* POINT */
 		SET_STRING_ELT(temp0, 0, mkChar("point"));
 	        setAttrib(Rshplst, install("shp.type"), temp0);
 	}
-	else if(nShapeType==3){  /* Lines */
+	else if(nShapeType==11){ /* POINTZ */
+		SET_STRING_ELT(temp0, 0, mkChar("point"));
+	        setAttrib(Rshplst, install("shp.type"), temp0);
+		pz=1;
+	}
+	else if(nShapeType==3){  /* ARC */
 		SET_STRING_ELT(temp0, 0,  mkChar("arc"));
 	        setAttrib(Rshplst, install("shp.type"), temp0);
 	}
-	else if(nShapeType==5){/* Polygons */
+	else if(nShapeType==13){  /* ARCZ */
+		SET_STRING_ELT(temp0, 0,  mkChar("arc"));
+	        setAttrib(Rshplst, install("shp.type"), temp0);
+	}
+	else if(nShapeType==5){/* POLYGON */
 		SET_STRING_ELT(temp0, 0, mkChar("poly"));
 	        setAttrib(Rshplst, install("shp.type"), temp0);
-		vdir=1;
 	}
-	else{
-	  error("Not a valid shape type");
+	else if(nShapeType==15){/* POLYGONZ */
+		SET_STRING_ELT(temp0, 0, mkChar("poly"));
+	        setAttrib(Rshplst, install("shp.type"), temp0);
+	}
+	else {
+	  Rprintf("Shapefile type: %s (%d), # of Shapes: %d\n\n",
+            SHPTypeName( nShapeType ), nShapeType, nEntities );
+	  error("Shapefile type not (yet) handled by this function");
 	}
 
 
@@ -108,8 +122,10 @@ SEXP Rshapeget(SEXP shpnm)
         SET_VECTOR_ELT(Rshplst, i, allocVector(VECSXP, 7));
         SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),0, 
 	  allocVector(INTSXP,psShape->nParts));	
-        SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),1,
-	  allocMatrix(REALSXP,psShape->nVertices,2));  
+        if (pz == 0) SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),1,
+	  allocMatrix(REALSXP,psShape->nVertices,2));
+	else SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),1,
+	  allocMatrix(REALSXP,psShape->nVertices,3));
         SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),2,
 		allocVector(INTSXP,1));
         SET_VECTOR_ELT(VECTOR_ELT(Rshplst,i),3,
@@ -139,6 +155,8 @@ SEXP Rshapeget(SEXP shpnm)
 	    REAL(VECTOR_ELT(VECTOR_ELT(Rshplst,i),1))[j]=psShape->padfX[j];
 	    REAL(VECTOR_ELT(VECTOR_ELT(Rshplst,i),1))[j+psShape->nVertices]=
 	                                  psShape->padfY[j];
+	    if (pz == 1) REAL(VECTOR_ELT(VECTOR_ELT(Rshplst,i),1))[j +
+			2*(psShape->nVertices)]=psShape->padfZ[j];
 	}
 	
         
