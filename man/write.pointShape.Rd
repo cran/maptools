@@ -6,7 +6,7 @@
   The function calls code from shapelib to write a point-type shapefile.
 }
 \usage{
-write.pointShape(object, file, coordinates, factor2char = TRUE)
+write.pointShape(object, file, coordinates, factor2char = TRUE, strictFilename=FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -14,6 +14,7 @@ write.pointShape(object, file, coordinates, factor2char = TRUE)
   \item{file}{a file name of maximum 8 chararacters, numbers or the underscore symbol to be written, omitting the extensions *.shp, *.shx and *.dbf, which are added in the function}
   \item{coordinates}{a 2-column numeric matrix of coordinates}
   \item{factor2char}{logical, default TRUE, convert factor columns to character}
+  \item{strictFilename}{if TRUE, impose file basename length limit of 8 characters}
 }
 
 \details{

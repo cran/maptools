@@ -869,26 +869,30 @@ convert.pl <- function(pl) {
 
 .RingCentrd_2d <- function(plmat) {
 	nVert <- nrow(plmat)
-	x_base <- plmat[1,1]
-	y_base <- plmat[1,2]
-	Cy_accum <- 0.0
-	Cx_accum <- 0.0
-	Area <- 0.0
-	ppx <- plmat[2,1] - x_base
-	ppy <- plmat[2,2] - y_base
-	for (iv in 2:(nVert-2)) {
-		x = plmat[iv,1] - x_base
-		y = plmat[iv,2] - y_base
-		dx_Area <-  ((x * ppy) - (y * ppx)) * 0.5
-		Area <- Area + dx_Area
-		Cx_accum <- Cx_accum + ( ppx + x ) * dx_Area      
-		Cy_accum <- Cy_accum + ( ppy + y ) * dx_Area
-		ppx <- x
-		ppy <- y
-	}
-	xc <- (Cx_accum / (Area * 3)) + x_base
-	yc <- (Cy_accum / (Area * 3)) + y_base
-	list(xc=xc, yc=yc, area=Area)	
+	res <- .C("RFindCG", as.integer(nVert), as.double(plmat[,1]), 
+		as.double(plmat[,2]), as.double(0), as.double(0), 
+		as.double(0), PACKAGE="maptools")
+
+#	x_base <- plmat[1,1]
+#	y_base <- plmat[1,2]
+#	Cy_accum <- 0.0
+#	Cx_accum <- 0.0
+#	Area <- 0.0
+#	ppx <- plmat[2,1] - x_base
+#	ppy <- plmat[2,2] - y_base
+#	for (iv in 2:(nVert-2)) {
+#		x = plmat[iv,1] - x_base
+#		y = plmat[iv,2] - y_base
+#		dx_Area <-  ((x * ppy) - (y * ppx)) * 0.5
+#		Area <- Area + dx_Area
+#		Cx_accum <- Cx_accum + ( ppx + x ) * dx_Area      
+#		Cy_accum <- Cy_accum + ( ppy + y ) * dx_Area
+#		ppx <- x
+#		ppy <- y
+#	}
+#	xc <- (Cx_accum / (Area * 3)) + x_base
+#	yc <- (Cy_accum / (Area * 3)) + y_base
+	list(xc=res[[4]], yc=res[[5]], area=abs(res[[6]]))	
 }
 
 .ringDirxy <- function(xy) {
@@ -896,37 +900,41 @@ convert.pl <- function(pl) {
 	b <- xy[,2]
 	nvx <- length(b)
 
-	if((a[1] == a[nvx]) && (b[1] == b[nvx])) {
-		a <- a[-nvx]
-		b <- b[-nvx]
-		nvx <- nvx - 1
-	}
-
-	tX <- 0.0
-	dfYMax <- max(b)
-	ti <- 1
-	for (i in 1:nvx) {
-		if (b[i] == dfYMax && a[i] > tX) ti <- i
-	}
-	if ( (ti > 1) & (ti < nvx) ) { 
-		dx0 = a[ti-1] - a[ti]
-      		dx1 = a[ti+1] - a[ti]
-      		dy0 = b[ti-1] - b[ti]
-      		dy1 = b[ti+1] - b[ti]
-   	} else if (ti == nvx) {
-		dx0 = a[ti-1] - a[ti]
-      		dx1 = a[1] - a[ti]
-      		dy0 = b[ti-1] - b[ti]
-      		dy1 = b[1] - b[ti]
-   	} else {
+#	if((a[1] == a[nvx]) && (b[1] == b[nvx])) {
+#		a <- a[-nvx]
+#		b <- b[-nvx]
+#		nvx <- nvx - 1
+#	}
+#
+#	tX <- 0.0
+#	dfYMax <- max(b)
+#	ti <- 1
+#	for (i in 1:nvx) {
+#		if (b[i] == dfYMax && a[i] > tX) ti <- i
+#	}
+#	if ( (ti > 1) & (ti < nvx) ) { 
+#		dx0 = a[ti-1] - a[ti]
+#      		dx1 = a[ti+1] - a[ti]
+#      		dy0 = b[ti-1] - b[ti]
+#      		dy1 = b[ti+1] - b[ti]
+#   	} else if (ti == nvx) {
+#		dx0 = a[ti-1] - a[ti]
+#      		dx1 = a[1] - a[ti]
+#      		dy0 = b[ti-1] - b[ti]
+#      		dy1 = b[1] - b[ti]
+#   	} else {
 #   /* if the tested vertex is at the origin then continue from 0 (1) */ 
-     		dx1 = a[2] - a[1]
-      		dx0 = a[nvx] - a[1]
-      		dy1 = b[2] - b[1]
-      		dy0 = b[nvx] - b[1]
-   	}
-	v3 = ( (dx0 * dy1) - (dx1 * dy0) )
-	if ( v3 > 0 ) return(as.integer(1))
-   	else return(as.integer(-1))
+#     		dx1 = a[2] - a[1]
+#      		dx0 = a[nvx] - a[1]
+#      		dy1 = b[2] - b[1]
+#      		dy0 = b[nvx] - b[1]
+#   	}
+#	v3 = ( (dx0 * dy1) - (dx1 * dy0) )
+
+	res <- .C("RFindCG", as.integer(nvx), as.double(a), as.double(b), 
+		as.double(0), as.double(0), as.double(0), PACKAGE="maptools")
+
+	if ( res[[6]] > 0 ) return(as.integer(-1))
+   	else return(as.integer(1))
 }
 

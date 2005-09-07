@@ -44,15 +44,16 @@ getinfo.shape <- function(filen) {
 }
 
 print.shapehead <- function(x, ...) {
-    types <- c("Point", NA, "Line", NA, "Polygon")
-    cat("Shapefile Type:", types[x[[2]]], "  # of Shapes:", 
-      x[[3]], "\n")
+    types <- c("Point", NA, "PolyLine", NA, "Polygon", NA, NA, "MultiPoint", NA, NA, "PointZ", NA, "PolyLineZ", NA, "PolygonZ", NA, NA, "MultiPointZ", NA, NA, "PointM", NA, "PolyLineM", NA, "PolygonM", NA, NA, "MultiPointM", NA, NA, "MultiPatch")
+    cat("Shapefile type: ", types[x[[2]]], ", (", x[[2]], "), # of Shapes: ", 
+      x[[3]], "\n", sep="")
 }
 
 
-write.pointShape <- function(object, file, coordinates, factor2char=TRUE) {
+write.pointShape <- function(object, file, coordinates, factor2char=TRUE, 
+  strictFilename=FALSE) {
   file <- path.expand(file)
-  if (nchar(basename(file)) > 8) 
+  if (strictFilename && nchar(basename(file)) > 8) 
     stop("shapefile names must conform to the 8.3 format")
   if (!is.matrix(coordinates)) stop("coordinates must be a matrix")
   if (!is.numeric(coordinates)) stop("coordinates must be numeric")
@@ -66,9 +67,10 @@ write.pointShape <- function(object, file, coordinates, factor2char=TRUE) {
   invisible(res)
 }
 
-write.polylistShape <- function(polylist, df, file, factor2char=TRUE) {
+write.polylistShape <- function(polylist, df, file, factor2char=TRUE, 
+  strictFilename=FALSE) {
   file <- path.expand(file)
-  if (nchar(basename(file)) > 8) 
+  if (strictFilename && nchar(basename(file)) > 8) 
     stop("shapefile names must conform to the 8.3 format")
   if (!inherits(polylist, "polylist")) stop("not a polylist object")
   if (length(polylist) < 1) stop("zero length polylist")
@@ -104,9 +106,10 @@ write.polylistShape <- function(polylist, df, file, factor2char=TRUE) {
   invisible(res)
 }
 
-write.linelistShape <- function(linelist, df, file, factor2char=TRUE) {
+write.linelistShape <- function(linelist, df, file, factor2char=TRUE, 
+  strictFilename=FALSE) {
   file <- path.expand(file)
-  if (nchar(basename(file)) > 8) 
+  if (strictFilename && nchar(basename(file)) > 8) 
     stop("shapefile names must conform to the 8.3 format")
   if (length(linelist) < 1) stop("zero length linelist")
   if (nrow(df) != length(linelist))
