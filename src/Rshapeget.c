@@ -11,13 +11,13 @@
 /* #include <R_ext/PrtUtil.h> */
 
 /*#define DEBUG 1*/
-SEXP Rshapeget(SEXP);
+/*SEXP Rshapeget(SEXP, SEXP);*/
 
-SEXP Rshapeget(SEXP shpnm)
+SEXP Rshapeget(SEXP shpnm, SEXP repair)
 
 {
     SHPHandle	hSHP;
-    int    nShapeType, nEntities, i, pc=0;
+    int    nShapeType, nEntities, nImpliedEOF, qRep, i, pc=0;
     double  adfMinBound[4], adfMaxBound[4];
     int j, pz=0;
     SHPObject *psShape;
@@ -25,10 +25,10 @@ SEXP Rshapeget(SEXP shpnm)
     SEXP  Rshplst, shplistnms;
     SEXP temp0, temp1, temp2, temp3;
 
-#ifdef DEBUG
+/*#ifdef DEBUG
     PT Cent;
     double Area;
-#endif
+#endif*/
 
 /* -------------------------------------------------------------------- */
 /*      Open the passed shapefile.                                      */
@@ -37,6 +37,28 @@ SEXP Rshapeget(SEXP shpnm)
     hSHP = SHPOpen(CHAR(STRING_ELT(shpnm,0)), "rb" );
     if( hSHP == NULL )    
 	error("unable to open file");
+
+    qRep = LOGICAL_POINTER(repair)[0];
+
+    nEntities = hSHP->nRecords;
+    nImpliedEOF = hSHP->panRecOffset[hSHP->nRecords-1] + 
+	hSHP->panRecSize[hSHP->nRecords-1] + 8; 
+/* file length implied by *.shx */
+    if (nImpliedEOF > hSHP->nFileSize && qRep == 0) {
+	error("File size and implied file size differ, consider trying repair=TRUE"); /* implied file length greater than file size */
+    }
+
+    if (qRep == 1 && nImpliedEOF > hSHP->nFileSize) {
+	for (i=1, j=0; i < hSHP->nRecords; i++)
+	    if (hSHP->panRecOffset[i] != (hSHP->panRecOffset[i-1] + 
+	        hSHP->panRecSize[i-1])) j++;
+	if (j > 0) error("Cannot repair file size error");
+	if (j == 0) {/* Geolytics size + 8 bug */
+	    for (i=1; i < hSHP->nRecords; i++) 
+	        hSHP->panRecSize[i] = hSHP->panRecSize[i] - 8;
+	    warning("SHX object size off by 8 bug repaired");
+	}
+    }
 
 
 /* -------------------------------------------------------------------- */
@@ -123,6 +145,11 @@ SEXP Rshapeget(SEXP shpnm)
    for( i = 0; i < nEntities; i++ ) 
      { 
 	psShape = SHPReadObject( hSHP, i);
+	if (psShape == NULL) {/* Jon Wakefield 060428 */
+	  Rprintf("Bailing out at geometry object %d of %d\n", i+1, nEntities);
+	  SHPClose(hSHP);
+	  error("Error in fseek() or fread() reading object from .shp file.");
+	}
 	if(nShapeType==8 && psShape->nVertices > 1){
 	  Rprintf("Shapefile type: %s (%d), # of Shapes: %d\n",
             SHPTypeName( nShapeType ), nShapeType, nEntities );
