@@ -13,13 +13,17 @@
 /*#define DEBUG 1*/
 /*SEXP Rshapeget(SEXP, SEXP);*/
 
+int SHPCheck_SHX( SHPHandle hSHP );
+int SHPCheck_SHX_Geolytics( SHPHandle hSHP );
+
+
 SEXP Rshapeget(SEXP shpnm, SEXP repair)
 
 {
     SHPHandle	hSHP;
     int    nShapeType, nEntities, nImpliedEOF, qRep, i, pc=0;
     double  adfMinBound[4], adfMaxBound[4];
-    int j, pz=0;
+    int j, pz=0, k;
     SHPObject *psShape;
 
     SEXP  Rshplst, shplistnms;
@@ -40,18 +44,14 @@ SEXP Rshapeget(SEXP shpnm, SEXP repair)
 
     qRep = LOGICAL_POINTER(repair)[0];
 
-    nEntities = hSHP->nRecords;
-    nImpliedEOF = hSHP->panRecOffset[hSHP->nRecords-1] + 
-	hSHP->panRecSize[hSHP->nRecords-1] + 8; 
 /* file length implied by *.shx */
-    if (nImpliedEOF > hSHP->nFileSize && qRep == 0) {
+    k = SHPCheck_SHX(hSHP);
+    if (k == 1 && qRep == 0) {
 	error("File size and implied file size differ, consider trying repair=TRUE"); /* implied file length greater than file size */
     }
 
-    if (qRep == 1 && nImpliedEOF > hSHP->nFileSize) {
-	for (i=1, j=0; i < hSHP->nRecords; i++)
-	    if (hSHP->panRecOffset[i] != (hSHP->panRecOffset[i-1] + 
-	        hSHP->panRecSize[i-1])) j++;
+    if (qRep == 1 && k == 1) {
+	j = SHPCheck_SHX_Geolytics(hSHP);
 	if (j > 0) error("Cannot repair file size error");
 	if (j == 0) {/* Geolytics size + 8 bug */
 	    for (i=1; i < hSHP->nRecords; i++) 
@@ -221,5 +221,28 @@ SEXP Rshapeget(SEXP shpnm, SEXP repair)
     return(Rshplst);
 }
 
+int SHPCheck_SHX( SHPHandle hSHP )
+/* checks file length against implied file length in *.shx to guard */
+/* against overrun */
 
+{
+    int result = 0;
+    if ((hSHP->panRecOffset[hSHP->nRecords-1] + 
+	hSHP->panRecSize[hSHP->nRecords-1] + 8) > hSHP->nFileSize)
+	    result = 1;
+    return( result );
+}
+
+int SHPCheck_SHX_Geolytics( SHPHandle hSHP )
+/* checks for Geolytics Inc. off by 8 bytes malformity in *.shx */
+
+{
+    int i, result;
+    for (i=1, result=0; i < hSHP->nRecords; i++)
+	if (hSHP->panRecOffset[i] != (hSHP->panRecOffset[i-1] + 
+	    hSHP->panRecSize[i-1])) result++;
+
+    return( result );
+
+}
 
