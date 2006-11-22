@@ -1,4 +1,4 @@
-/*	$Id: Rgshhs.c,v 1.1 2006/10/31 13:07:54 rsbivand Exp $
+/*	$Id: Rgshhs.c,v 1.2 2006/11/16 14:31:24 rsbivand Exp $
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
