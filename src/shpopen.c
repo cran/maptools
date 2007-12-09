@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: shpopen.c,v 1.1.1.1 2005/09/01 18:21:59 rsbivand Exp $
+ * $Id: shpopen.c,v 1.3 2007/11/16 09:12:40 rsbivand Exp $
  *
  * Project:  Shapelib
  * Purpose:  Implementation of core Shapefile read/write functions.
@@ -34,6 +34,12 @@
  ******************************************************************************
  *
  * $Log: shpopen.c,v $
+ * Revision 1.3  2007/11/16 09:12:40  rsbivand
+ * GSHHS to 1.5
+ *
+ * Revision 1.2  2007/11/10 13:17:42  rsbivand
+ * assert
+ *
  * Revision 1.1.1.1  2005/09/01 18:21:59  rsbivand
  * Initial import.
  *
@@ -186,12 +192,15 @@
 
 #include <math.h>
 #include <limits.h>
-#include <assert.h>
+/* #include <assert.h> RSB 071110 */
+#include <R.h>
+#include <Rdefines.h>
+#include <R_ext/Applic.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-SHP_CVSID("$Id: shpopen.c,v 1.1.1.1 2005/09/01 18:21:59 rsbivand Exp $")
+SHP_CVSID("$Id: shpopen.c,v 1.3 2007/11/16 09:12:40 rsbivand Exp $")
 
 typedef unsigned char uchar;
 
@@ -992,8 +1001,9 @@ SHPCreateObject( int nSHPType, int nShapeId, int nParts,
         psObject->padfZ = (double *) calloc(sizeof(double),nVertices);
         psObject->padfM = (double *) calloc(sizeof(double),nVertices);
 
-        assert( padfX != NULL );
-        assert( padfY != NULL );
+/* RSB 071110 */
+        if ( !(padfX != NULL) ) error("assert( padfX != NULL ) failed");
+        if ( !(padfY != NULL) ) error("assert( padfY != NULL ) failed");
     
         for( i = 0; i < nVertices; i++ )
         {
@@ -1053,16 +1063,18 @@ SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject )
 /*      Ensure that shape object matches the type of the file it is     */
 /*      being written to.                                               */
 /* -------------------------------------------------------------------- */
-    assert( psObject->nSHPType == psSHP->nShapeType 
-            || psObject->nSHPType == SHPT_NULL );
+/* RSB 071110 */
+    if ( !(psObject->nSHPType == psSHP->nShapeType 
+            || psObject->nSHPType == SHPT_NULL) ) error("assert( psObject->nSHPType == psSHP->nShapeType || psObject->nSHPType == SHPT_NULL ) failed");
 
 /* -------------------------------------------------------------------- */
 /*      Ensure that -1 is used for appends.  Either blow an             */
 /*      assertion, or if they are disabled, set the shapeid to -1       */
 /*      for appends.                                                    */
 /* -------------------------------------------------------------------- */
-    assert( nShapeId == -1 
-            || (nShapeId >= 0 && nShapeId < psSHP->nRecords) );
+/* RSB 071110 */
+    if ( !(nShapeId == -1 
+            || (nShapeId >= 0 && nShapeId < psSHP->nRecords)) ) error("assert( nShapeId == -1 || (nShapeId >= 0 && nShapeId < psSHP->nRecords) ) failed");
 
     if( nShapeId != -1 && nShapeId >= psSHP->nRecords )
         nShapeId = -1;
@@ -1314,7 +1326,8 @@ SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject )
     else
     {
         /* unknown type */
-        assert( FALSE );
+/* RSB 071110 */
+        error("unknown psObject->nSHPType");
     }
 
 /* -------------------------------------------------------------------- */
