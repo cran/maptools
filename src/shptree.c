@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: shptree.c,v 1.1.1.1 2005/09/01 18:22:22 rsbivand Exp $
+ * $Id: shptree.c,v 1.2 2007/11/10 13:17:42 rsbivand Exp $
  *
  * Project:  Shapelib
  * Purpose:  Implementation of quadtree building and searching functions.
@@ -34,6 +34,9 @@
  ******************************************************************************
  *
  * $Log: shptree.c,v $
+ * Revision 1.2  2007/11/10 13:17:42  rsbivand
+ * assert
+ *
  * Revision 1.1.1.1  2005/09/01 18:22:22  rsbivand
  * Initial import.
  *
@@ -72,11 +75,11 @@
 #include "shapefil.h"
 
 #include <math.h>
-#include <assert.h>
+/* #include <assert.h> RSB 071110 */
 #include <stdlib.h>
 #include <string.h>
 
-SHP_CVSID("$Id: shptree.c,v 1.1.1.1 2005/09/01 18:22:22 rsbivand Exp $")
+SHP_CVSID("$Id: shptree.c,v 1.2 2007/11/10 13:17:42 rsbivand Exp $")
 
 #ifndef TRUE
 #  define TRUE 1
