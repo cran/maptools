@@ -1,4 +1,4 @@
-/*	$Id: Rgshhs.h,v 1.2 2007/11/16 09:12:40 rsbivand Exp $
+/*	$Id: Rgshhs.h,v 1.3 2007/12/09 18:03:39 rsbivand Exp $
  *
  * Include file defining structures used in gshhs.c
  *
