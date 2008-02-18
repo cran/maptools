@@ -1,5 +1,5 @@
 # Copyright 2000-2001 (c) Nicholas Lewin-Koh 
-# modifications 2001-2005 Roger Bivand
+# modifications 2001-2008 Roger Bivand
 # reads an ESRI shapefile into a map object
 # set the variables for the header info
 
@@ -40,13 +40,7 @@ read.shape <- function(filen, dbf.data=TRUE, verbose=TRUE, repair=FALSE) {
 }
 
 getinfo.shape <- function(filen) {
-  shptype <- 0
-  nRecords <- 0
-  MinBounds <- c(0,0,0,0)
-  MaxBounds <- c(0,0,0,0)
-  shapehead <-.C("Rshapeinfo", as.character(filen),
-               as.integer(shptype), as.integer(nRecords), as.double(MinBounds),
-               as.double(MaxBounds), PACKAGE="maptools")
+  shapehead <-.Call("Rshapeinfo1", as.character(path.expand(filen)), PACKAGE="maptools")
   class(shapehead) <- "shapehead"
   shapehead
 }
@@ -62,6 +56,13 @@ print.shapehead <- function(x, ...) {
 write.pointShape <- function(coordinates, df, file, factor2char=TRUE, 
   strictFilename=FALSE, max_nchar=254) {
   file <- path.expand(file)
+  dirnm <- dirname(file)
+  bnm0 <- basename(file)
+  bnm1 <- strsplit(bnm0, "\\.")[[1]]
+  if (bnm1[length(bnm1)] == "shp") 
+    bnm <- paste(bnm1[-length(bnm1)], collapse=".")
+  else bnm <- bnm0
+  file <- paste(dirnm, bnm, sep=.Platform$file.sep)
   if (strictFilename && nchar(basename(file)) > 8) 
     stop("shapefile names must conform to the 8.3 format")
   if (!is.matrix(coordinates)) stop("coordinates must be a matrix")
@@ -256,6 +257,13 @@ write.pointShape <- function(coordinates, df, file, factor2char=TRUE,
 write.polylistShape <- function(polylist, df, file, factor2char=TRUE, 
   strictFilename=FALSE, force=TRUE, max_nchar=254) {
   file <- path.expand(file)
+  dirnm <- dirname(file)
+  bnm0 <- basename(file)
+  bnm1 <- strsplit(bnm0, "\\.")[[1]]
+  if (bnm1[length(bnm1)] == "shp") 
+    bnm <- paste(bnm1[-length(bnm1)], collapse=".")
+  else bnm <- bnm0
+  file <- paste(dirnm, bnm, sep=.Platform$file.sep)
   if (strictFilename && nchar(basename(file)) > 8) 
     stop("shapefile names must conform to the 8.3 format")
   if (!inherits(polylist, "polylist")) stop("not a polylist object")
@@ -277,6 +285,13 @@ write.polylistShape <- function(polylist, df, file, factor2char=TRUE,
 write.linelistShape <- function(linelist, df, file, factor2char=TRUE, 
   strictFilename=FALSE, max_nchar=254) {
   file <- path.expand(file)
+  dirnm <- dirname(file)
+  bnm0 <- basename(file)
+  bnm1 <- strsplit(bnm0, "\\.")[[1]]
+  if (bnm1[length(bnm1)] == "shp") 
+    bnm <- paste(bnm1[-length(bnm1)], collapse=".")
+  else bnm <- bnm0
+  file <- paste(dirnm, bnm, sep=.Platform$file.sep)
   if (strictFilename && nchar(basename(file)) > 8) 
     stop("shapefile names must conform to the 8.3 format")
   if (length(linelist) < 1) stop("zero length linelist")

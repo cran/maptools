@@ -8,12 +8,24 @@ if (!isClass("owin"))
 if (!isClass("im"))
     setClass("im")
 
-as.SpatialPoints.ppp =  function(from) SpatialPoints(cbind(from$x, from$y))
+as.SpatialPoints.ppp =  function(from) {
+    mult <- 1
+    if (!is.null(from$window$units) && !is.null(from$window$units$multiplier))
+        mult <- from$window$units$multiplier
+    crds <- cbind(mult*as.double(from$x), mult*as.double(from$y))
+    if (from$window$type == "rectangle") {
+        ow <- from$window
+        bbox <- rbind(mult*as.double(ow$xrange), mult*as.double(ow$yrange))
+        colnames(bbox) <- c("min", "max")
+    } else bbox <- NULL
+    SpatialPoints(coords=crds, bbox=bbox)
+}
 setAs("ppp", "SpatialPoints", as.SpatialPoints.ppp)
 
-as.SpatialPointsDataFrame.ppp = function(from) 
-	SpatialPointsDataFrame(SpatialPoints(cbind(from$x, from$y)), 
-		data.frame(marks = from$marks))
+as.SpatialPointsDataFrame.ppp = function(from) {
+	SP <- as(from, "SpatialPoints") 
+	SpatialPointsDataFrame(SP, data.frame(marks = from$marks))
+}
 setAs("ppp", "SpatialPointsDataFrame", as.SpatialPointsDataFrame.ppp)
 
 as.SpatialGridDataFrame.ppp = function(from) {
