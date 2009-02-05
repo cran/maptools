@@ -1,6 +1,22 @@
+2009-02-05 18:45  rsbivand
+
+	* man/asciigrid.Rd: tidy
+
+2009-02-05 16:38  rsbivand
+
+	* R/readSplus.R, man/sp2WB.Rd, ChangeLog, inst/ChangeLog: adding
+	  features to readSplus
+
+2009-02-05 14:38  rsbivand
+
+	* DESCRIPTION, NAMESPACE, R/readSplus.R, inst/share/Splus.map,
+	  man/readSplus.Rd, ChangeLog, inst/ChangeLog: adding readSplus for
+	  WinBUGS
+
 2009-01-20 15:38  rsbivand
 
-	* DESCRIPTION, R/sun-methods.R: sun NULL tz
+	* DESCRIPTION, R/sun-methods.R, ChangeLog, inst/ChangeLog: sun NULL
+	  tz
 
 2008-11-13 15:06  rsbivand
 
