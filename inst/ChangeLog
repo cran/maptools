@@ -1,3 +1,13 @@
+2009-06-22 16:52  rsbivand
+
+	* ChangeLog, DESCRIPTION, R/SpatialPolys-methods.R, inst/ChangeLog:
+	  changed all.equal to identical in closed ring forcing
+
+2009-06-10 16:33  rsbivand
+
+	* ChangeLog, DESCRIPTION, R/SpatialPolys-methods.R, inst/ChangeLog:
+	  more NULL geometry trapping
+
 2009-05-26 12:22  rsbivand
 
 	* ChangeLog, DESCRIPTION, R/sp_spat1.R, R/spatstat1.R,
