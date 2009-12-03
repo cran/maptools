@@ -3,12 +3,13 @@ useDynLib(maptools)
 import(sp)
 import(foreign)
 
-export(leglabs, plotpolys, shape2poly, shape2lines, 
-	shape2points, shape2bbs, Map2poly, Map2poly1, Map2lines, Map2points, 
-	Map2bbs, convert.pl, get.Pcent, read.shape, getinfo.shape,
-	plot.Map, plot.polylist, subset.polylist, maptools, dotsInPolys,
-	symbolsInPolys, write.pointShape, write.polylistShape, 
-	write.linelistShape, print.shapehead)
+export(leglabs, dotsInPolys, symbolsInPolys, getinfo.shape, print.shapehead) 
+        # plotpolys, shape2poly, shape2lines, 
+	# shape2points, shape2bbs, Map2poly, Map2poly1, Map2lines, Map2points, 
+	# Map2bbs, convert.pl, get.Pcent, read.shape,
+	# plot.Map, plot.polylist, subset.polylist, maptools, dotsInPolys,
+	# symbolsInPolys, write.pointShape, write.polylistShape, 
+	# write.linelistShape)
 
 export(readShapePoints, readShapeLines, readShapePoly)
 
@@ -41,7 +42,8 @@ export(unionSpatialPolygons, nowrapSpatialPolygons, nowrapRecenter, checkPolygon
 
 export(Rgshhs)
 
-exportMethods(coerce, spCbind, spRbind, spChFIDs)
+exportMethods(coerce, spCbind, spRbind)
+
 exportMethods(elide)
 
 export(GE_SpatialGrid, kmlOverlay, Sobj_SpatialGrid)
@@ -49,10 +51,11 @@ export(GE_SpatialGrid, kmlOverlay, Sobj_SpatialGrid)
 export(kmlPolygon, kmlLine, getKMLcoordinates)
 
 export(pointLabel, gcDestination)
+export(thinnedSpatialPoly)
 
-S3method(plot, Map)
-S3method(plot, polylist)
-S3method(subset, polylist)
+#S3method(plot, Map)
+#S3method(plot, polylist)
+#S3method(subset, polylist)
 S3method(print, shapehead)
 #S3method(as.ppp, SpatialPoints)
 #S3method(as.ppp, SpatialPointsDataFrame)
