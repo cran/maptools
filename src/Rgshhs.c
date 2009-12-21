@@ -1,4 +1,7 @@
-/*	$Id: Rgshhs.c,v 1.5 2008/05/24 16:27:26 rsbivand Exp $
+/*	$Id: Rgshhs.c,v 1.7 2009/12/21 12:37:45 rsbivand Exp $
+ *
+ *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
+ *	See COPYING file for copying and redistribution conditions.
  *
  * PROGRAM:	gshhs.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
@@ -16,6 +19,11 @@
  *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
  *		1.8 31-MAR-2007: Updated to deal with latest GSHHS database (1.5)
  *		1.9 27-AUG-2007: Handle line data as well as polygon data
+ *		1.10 15-FEB-2008: Updated to deal with latest GSHHS database (1.6)
+ *		1.12 15-JUN-2009: Now contains information on container polygon,
+ *				the polygons ancestor in the full resolution, and
+ *				a flag to tell if a lake is a riverlake.
+ *				Updated to deal with latest GSHHS database (2.0)
  *
  *	Copyright (c) 1996-2004 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -32,7 +40,7 @@
  *	Contact info: www.soest.hawaii.edu/pwessel */
 
 /*
- * This modification of gshhs.c is Copyright (c) 2005-7 Roger Bivand
+ * This modification of gshhs.c is Copyright (c) 2005-9 Roger Bivand
  * Modification to swap function taken from Rsystat.c in foreign 071117
 */
 
@@ -71,8 +79,9 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 {
 	FILE *fp;
 	double w, e, s, n, area, lon, lat;
-	char source, kind[2] = {'P', 'L'}, *name[2] = {"polygon", "line"};
+	char source, kind[2] = {'P', 'L'};
 	char msg[255];
+	char *name[2] = {"polygon", "line"}, container[8], ancestor[8];
 	int k, line, max_east = 270000000, info, n_read, /*flip,*/ Level, version, greenwich, src;
 	struct POINT p;
 	struct GSHHS h;
@@ -103,9 +112,9 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 
 		rewind(fp);
 
-		PROTECT(res = NEW_LIST(12)); pc++;
+		PROTECT(res = NEW_LIST(14)); pc++;
 
-		PROTECT(resnames = NEW_CHARACTER(12)); pc++;
+		PROTECT(resnames = NEW_CHARACTER(14)); pc++;
 		SET_STRING_ELT(resnames, 0, COPY_TO_USER_STRING("id"));
 		SET_STRING_ELT(resnames, 1, COPY_TO_USER_STRING("n"));
 		SET_STRING_ELT(resnames, 2, COPY_TO_USER_STRING("level"));
@@ -118,6 +127,8 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 		SET_STRING_ELT(resnames, 9, COPY_TO_USER_STRING("south"));
 		SET_STRING_ELT(resnames, 10, COPY_TO_USER_STRING("north"));
 		SET_STRING_ELT(resnames, 11, COPY_TO_USER_STRING("line"));
+		SET_STRING_ELT(resnames, 12, COPY_TO_USER_STRING("container"));
+		SET_STRING_ELT(resnames, 13, COPY_TO_USER_STRING("ancestor"));
 		setAttrib(res, R_NamesSymbol, resnames);
 
 		SET_VECTOR_ELT(res, 0, NEW_INTEGER(npols));
@@ -132,6 +143,8 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 		SET_VECTOR_ELT(res, 9, NEW_NUMERIC(npols));
 		SET_VECTOR_ELT(res, 10, NEW_NUMERIC(npols));
 		SET_VECTOR_ELT(res, 11, NEW_INTEGER(npols));
+		SET_VECTOR_ELT(res, 12, NEW_INTEGER(npols));
+		SET_VECTOR_ELT(res, 13, NEW_INTEGER(npols));
 
 		fpos =  (signed int) ftell(fp);
 		n_read = fread ((void *)&h, (size_t)sizeof (struct GSHHS), 
@@ -155,10 +168,12 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 			h.greenwich = swabi2 ((unsigned int)h.greenwich);
 			h.source = swabi2 ((unsigned int)h.source);*/
 			swapb (&h.flag, sizeof(int));
+                        swapb (&h.ancestor, sizeof(int));
+                        swapb (&h.container, sizeof(int));
 /*		    }*/
 		    Level = h.flag & 255;
 		    version = (h.flag >> 8) & 255;
-		    if (version != GSHHS_DATA_VERSION) 
+		    if (version != GSHHS_DATA_RELEASE) 
 			error("Data not same version as software");
 		    greenwich = (h.flag >> 16) & 255;
 		    src = (h.flag >> 24) & 255;
@@ -186,6 +201,8 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 		    NUMERIC_POINTER(VECTOR_ELT(res, 9))[i] = s;
 		    NUMERIC_POINTER(VECTOR_ELT(res, 10))[i] = n;
 		    INTEGER_POINTER(VECTOR_ELT(res, 11))[i] = (signed int) line;
+		    INTEGER_POINTER(VECTOR_ELT(res, 12))[i] = (signed int) h.container;
+		    INTEGER_POINTER(VECTOR_ELT(res, 13))[i] = (signed int) h.ancestor;
 
 		    fseek (fp, (long)(h.n * sizeof(struct POINT)), SEEK_CUR);
 
