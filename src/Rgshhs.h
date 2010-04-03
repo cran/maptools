@@ -1,4 +1,4 @@
-/*	$Id: Rgshhs.h,v 1.5 2009/12/18 21:56:57 rsbivand Exp $
+/*	$Id: Rgshhs.h,v 1.6 2010/04/03 16:01:48 rsbivand Exp $
  *
  * Include file defining structures used in gshhs.c
  *
@@ -40,7 +40,7 @@ This modification of gshhs.h is Copyright (c) 2005-9 Roger Bivand
 
 #ifndef _GSHHS
 #define _GSHHS
-#define _POSIX_SOURCE 1		/* GSHHS code is POSIX compliant */
+/* RSB #define _POSIX_SOURCE 1		 GSHHS code is POSIX compliant */
 
 /*#include <stdio.h>
 #include <stdlib.h>

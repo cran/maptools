@@ -1,6 +1,6 @@
 Package: maptools
-Version: 0.7-29
-Date: 2009-12-21
+Version: 0.7-33
+Date: 2010-04-03
 Title: Tools for reading and handling spatial objects
 Encoding: latin1
 Author: Nicholas J. Lewin-Koh and Roger Bivand, contributions by Edzer
@@ -19,6 +19,6 @@ Description: Set of tools for manipulating and reading geographic data,
         with packages such as PBSmapping, spatstat, maps, RArcInfo,
         Stata tmap, WinBUGS, Mondrian, and others.
 License: GPL (>= 2)
-Packaged: 2009-12-21 12:42:44 UTC; rsb
+Packaged: 2010-04-03 19:28:05 UTC; rsb
 Repository: CRAN
-Date/Publication: 2009-12-21 17:43:10
+Date/Publication: 2010-04-04 15:43:13
