@@ -1,6 +1,58 @@
+2010-04-03 21:24  rsbivand
+
+	* DESCRIPTION, R/DP.R, R/Rgshhs.R, R/checkHoles.R,
+	  R/nowrapRecenter.R, R/union.R: hide rgeos
+
+2010-04-03 18:22  rsbivand
+
+	* R/shapelib.R, ChangeLog, inst/ChangeLog: DBF filename, GSHHS C
+	  code errors addressed
+
+2010-04-03 18:01  rsbivand
+
+	* DESCRIPTION, R/AAA.R, R/shapelib.R, R/union.R,
+	  man/readShapeLines.Rd, man/readShapePoints.Rd,
+	  man/readShapePoly.Rd, man/readShapeSpatial.Rd,
+	  man/unionSpatialPolygons.Rd, src/Rgshhs.c, src/Rgshhs.h,
+	  ChangeLog, inst/ChangeLog: DBF filename, GSHHS C code errors
+	  addressed
+
+2010-01-17 20:26  rsbivand
+
+	* R/AAA.R, R/sp_bind.R, man/spRbind-methods.Rd: change spRbind for
+	  SpatialPointsDataFrame objects
+
+2010-01-10 20:42  rsbivand
+
+	* ChangeLog, inst/ChangeLog: gshhs hole fix
+
+2010-01-10 20:37  rsbivand
+
+	* R/Rgshhs.R: gshhs hole fix
+
+2010-01-08 10:46  rsbivand
+
+	* R/Rgshhs.R, ChangeLog, inst/ChangeLog: hole assignment in GSHHS
+
+2010-01-07 19:07  rsbivand
+
+	* ChangeLog, inst/ChangeLog: rgeos integration
+
+2010-01-07 19:03  rsbivand
+
+	* R/AAA.R, R/Rgshhs.R, man/Rgshhs.Rd: rgeos integration
+
+2010-01-07 13:10  rsbivand
+
+	* DESCRIPTION, NAMESPACE, R/DP.R, R/Rgshhs.R, R/checkHoles.R,
+	  R/nowrapRecenter.R, R/union.R, R/zzz.R, man/Rgshhs.Rd,
+	  man/checkPolygonsHoles.Rd, man/nowrapRecenter.Rd,
+	  man/thinnedSpatialPoly.Rd, man/unionSpatialPolygons.Rd, R/AAA.R:
+	  rgeos integration
+
 2009-12-21 13:39  rsbivand
 
-	* ChangeLog, INDEX: adding CCmaps
+	* ChangeLog, INDEX, inst/ChangeLog: adding CCmaps
 
 2009-12-21 13:35  rsbivand
 
