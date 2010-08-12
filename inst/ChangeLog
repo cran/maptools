@@ -1,6 +1,15 @@
+2010-08-12 17:08  rsbivand
+
+	* R/kmlLine.R, man/holepolys.Rd, DESCRIPTION: data docs fix
+
+2010-04-22 04:47  rsbivand
+
+	* DESCRIPTION, R/shapelib.R, ChangeLog, inst/ChangeLog: read.shape
+	  filen without extension
+
 2010-04-12 08:55  rsbivand
 
-	* DESCRIPTION: tidy
+	* DESCRIPTION, ChangeLog, inst/ChangeLog: tidy
 
 2010-04-05 12:42  rsbivand
 
