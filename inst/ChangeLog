@@ -1,6 +1,26 @@
+2010-09-08 18:36  rsbivand
+
+	* DESCRIPTION, R/SpatialLines-methods.R, man/readShapeLines.Rd,
+	  man/readShapePoly.Rd, man/readShapeSpatial.Rd: zero nParts for
+	  lines
+
+2010-08-28 12:34  rsbivand
+
+	* R/Rgshhs.R, R/maptools.R, R/shapelib.R, R/sp2pbs.R, R/sp_spat1.R,
+	  R/union.R, ChangeLog, inst/ChangeLog: as.double to storage.mode
+
+2010-08-26 12:36  rsbivand
+
+	* ChangeLog, inst/ChangeLog: check Sys.which value
+
+2010-08-26 12:32  rsbivand
+
+	* DESCRIPTION, R/readGPS.R: check Sys.which value
+
 2010-08-12 17:08  rsbivand
 
-	* R/kmlLine.R, man/holepolys.Rd, DESCRIPTION: data docs fix
+	* R/kmlLine.R, man/holepolys.Rd, DESCRIPTION, ChangeLog,
+	  inst/ChangeLog: data docs fix
 
 2010-04-22 04:47  rsbivand
 
