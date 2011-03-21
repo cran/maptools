@@ -82,7 +82,7 @@ SpatialLines2PolySet <- function(SL) {
 	p4str <- proj4string(Sobj)
 	if (is.na(p4str)) return("1")
 	res <- grep("longlat", p4str, fixed=TRUE)
-	if (length(res) > 0) return("LL")
+	if (length(res) > 0L) return("LL")
 	res <- regexpr("utm", p4str, fixed=TRUE)
 	if (res > 0) {
 		val <- "UTM"
@@ -106,7 +106,11 @@ PolySet2SpatialPolygons <- function(PS, close_polys=TRUE) {
         if (is.null(zn)) zn <- attr(PS, "zone")
         if (is.null(zn)) stop("no valid zone attribute")
 	p4s <- paste("+proj=utm +zone=", zn, sep="")
-    } else stop("unknown coordinate reference system")
+    } else {
+       p4s <- as.character(NA)
+       warning("unknown coordinate reference system")
+    }
+# stop("unknown coordinate reference system") 110310
     hasPID <- "PID" %in% names(PS)
     if (!hasPID) stop("object does not have PID column")
     res0 <- split(PS, PS$PID)
@@ -156,7 +160,11 @@ PolySet2SpatialLines <- function(PS) {
         if (is.null(zn)) zn <- attr(PS, "zone")
         if (is.null(zn)) stop("no valid zone attribute")
 	p4s <- paste("+proj=utm +zone=", zn, sep="")
-    } else stop("unknown coordinate reference system")
+    } else {
+       p4s <- as.character(NA)
+       warning("unknown coordinate reference system")
+    }
+# stop("unknown coordinate reference system") 110310
     hasPID <- "PID" %in% names(PS)
     if (!hasPID) stop("object does not have PID column")
     res0 <- split(PS, PS$PID)

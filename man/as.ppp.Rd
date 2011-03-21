@@ -83,7 +83,7 @@ topology checking is enabled by default. To avoid checking, set
 \code{spatstat.options(checkpolygons=FALSE)} (from spatstat (1.14-6)). 
 To perform the checking later, \code{owinpolycheck(W, verbose=TRUE)}.}
 
-\author{Edzer Pebesma \email{e.pebesma@geo.uu.nl}, Roger Bivand}
+\author{Edzer Pebesma \email{edzer.pebesma@uni-muenster.de}, Roger Bivand}
 \examples{
 library(spatstat)
 data(meuse)
@@ -127,7 +127,7 @@ all.equal(ho_sp, ho_sp1, check.attributes=FALSE)
 A <- tess(xgrid=0:4,ygrid=0:4)
 A_sp <- as(A, "SpatialPolygons")
 plot(A_sp)
-text(coordinates(A_sp), sapply(slot(A_sp, "polygons"), slot, "ID"), cex=0.6)
+text(coordinates(A_sp), labels=row.names(A_sp), cex=0.6)
 mg_dist <- meuse.grid["dist"]
 fullgrid(mg_dist) <- TRUE
 image(mg_dist, axes=TRUE)

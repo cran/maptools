@@ -1,4 +1,4 @@
-/*	$Id: Rgshhs.c,v 1.8 2010/04/03 16:01:48 rsbivand Exp $
+/*	$Id: Rgshhs.c 179 2010-12-31 15:37:52Z rsbivand $
  *
  *	Copyright (c) 1996-2009 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -175,7 +175,7 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 /*		    }*/
 		    Level = h.flag & 255;
 		    version = (h.flag >> 8) & 255;
-		    if (version != GSHHS_DATA_RELEASE) 
+		    if (!(version == 7 || version == 8)) 
 			error("Data not same version as software");
 		    greenwich = (h.flag >> 16) & 255;
 		    src = (h.flag >> 24) & 255;

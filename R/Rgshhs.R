@@ -1,9 +1,10 @@
-# Copyright (c) 2005-2010 Roger Bivand
+# Copyright (c) 2005-2010 Roger Bivand and Karl Ove Hufthammer
 
 Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0, 
-	shift=FALSE, verbose=TRUE, no.clip = FALSE) {
+	shift=FALSE, verbose=TRUE, no.clip = FALSE, properly=FALSE,
+        avoidGEOS=FALSE, checkPolygons=FALSE) {
 	if (!is.character(fn)) stop("file name must be character string")
-	if (length(fn) != 1) stop("file name must be single character string")
+	if (length(fn) != 1L) stop("file name must be single character string")
 	dolim <- FALSE
 	dolim <- (!is.null(xlim) || !is.null(ylim))
 	if (!is.null(xlim)) lim <- xlim
@@ -25,8 +26,8 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 		minarea, PACKAGE="maptools")
 	else clip <- NULL
         rgeosI <- rgeosStatus()
-        if (rgeosI) {
-#            require(rgeos)
+        if (rgeosI && !avoidGEOS) {
+            require(rgeos)
         } else {
             stopifnot(isTRUE(gpclibPermitStatus()))
 	    require("gpclib")
@@ -37,7 +38,7 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 
 	Antarctica <- which(polydata$area[(chosen_0+1)] > 1.3e+07 & 
 		polydata$area[(chosen_0+1)] < 1.4e+07)
-	if (length(Antarctica) == 1) {
+	if (length(Antarctica) == 1L) {
 		if (verbose) cat("Polygon", which(chosen_0 == (Antarctica-1)), 
 			"is Antarctica\n")
 		if (verbose) cat("  area", polydata$area[Antarctica], "\n")
@@ -59,13 +60,16 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 	    ic <- 1
 	    if (verbose) cat("Rgshhs: clipping", sum(clip), "of", 
 		length(polys), "polygons ...\n")
-            if (rgeosI) {
-		limgp <- Polygons(list(Polygon(limbb)), ID="0")
+            if (rgeosI && !avoidGEOS) {
+		limgp <- SpatialPolygons(list(Polygons(list(Polygon(limbb)),
+                    ID="0")))
 		for (i in seq(along=polys)) {
 		    if (clip[i] == 1) {
-                        tp <- Polygons(list(Polygon(polys[[i]])), ID="1")
+                        tp <- SpatialPolygons(list(Polygons(list(Polygon(
+                            polys[[i]])), ID="1")))
                         rp0 <- NULL
-#                        rp0 <- PolygonsIntersections(tp, limgp)
+                        gI <- gIntersection(tp, limgp)
+                        if (!is.null(gI)) rp0 <- slot(gI, "polygons")[[1]]
                         rp <- NULL
                         if (!is.null(rp0)) 
                             rp <- lapply(slot(rp0, "Polygons"), slot, "coords")
@@ -121,7 +125,7 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 	chosen_1 <- chosen_0+1
 	if (line == 0) {
 	 levels <- polydata$level[chosen_1]
-         if (rgeosI) {
+         if (rgeosI && !avoidGEOS) {
           ids <- polydata$id[chosen_1]
           containers <- polydata$container[chosen_1]
           ancestors <- polydata$ancestor[chosen_1]
@@ -129,7 +133,7 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
           ntl <- as.integer(names(tl))
           mntl <- match(1:4, ntl)
           l1 <- which(levels == 1L)
-          if (length(l1) > 0) {
+          if (length(l1) > 0L) {
               c1 <- which(containers == -1L)
               if (any(l1 != c1)) warning("containers and levels not coherent")
               if (!is.na(mntl[4])) {
@@ -172,19 +176,26 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 			}
 			if (shift) crds[,1] <- ifelse(crds[,1] > 180, 
 			    crds[,1] - 360, crds[,1])
-			jres <- list(Polygon(crds, hole=holes[this]))
+			if (checkPolygons) {
+                            jres <- list(Polygon(crds))
+                        } else {
+                            jres <- list(Polygon(crds, hole=holes[this]))
+                        }
 			srl <- c(srl, jres)
 		    }
 		}
                 pls0 <- Polygons(srl, ID=IDs[i])
-#		Srl[[i]] <- checkPolygonsGEOS(pls0)
-                Srl[[i]] <- pls0
+		if (checkPolygons) {
+                    Srl[[i]] <- checkPolygonsGEOS(pls0, properly=properly)
+                } else {
+                    Srl[[i]] <- pls0
+                }
 	  }
 	  res <- as.SpatialPolygons.PolygonsList(Srl, 
 		proj4string=CRS("+proj=longlat +datum=WGS84"))
+          polydata <- data.frame(polydata)[chosen_1,]
 
-	  list(polydata=data.frame(polydata)[chosen_1,], belongs=belongs,
-              SP=res)
+	  return(list(polydata=polydata, belongs=belongs, SP=res))
          } else {
 	  belongs <- matrix(1:length(chosen_1), ncol=1)
 #	  belonged_to <- as.numeric(rep(NA, length(chosen_1)))
@@ -203,8 +214,8 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 	    for (il in mlevel:2) {
 		w_il <- which(levels == il)
 		w_il_1 <- which(levels == (il-1))
-		if (length(w_il) > 0) {
-			if (length(w_il_1) == 1) {
+		if (length(w_il) > 0L) {
+			if (length(w_il_1) == 1L) {
 			    belongs[w_il, (il-1)] <- w_il_1
 			    if (!first_time) {
 				prom <- which(!is.na(match(belongs[,il], w_il)))
@@ -217,7 +228,7 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 			    for (i in 1:length(w_il_1)) {
 				ii <- w_il_1[i]
 				lp1 <- as(polys[[ii]][[1]], "gpc.poly")
-				if (length(polys[[ii]]) > 1) {
+				if (length(polys[[ii]]) > 1L) {
 				    for (j in 2:length(polys[[ii]])) {
 					lpj <- as(polys[[ii]][[j]], "gpc.poly")
 					lp1 <- append.poly(lp1, lpj)
@@ -228,7 +239,7 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 			    for (i in 1:length(w_il)) {
 				ii <- w_il[i]
 				lp1 <- as(polys[[ii]][[1]], "gpc.poly")
-				if (length(polys[[ii]]) > 1) {
+				if (length(polys[[ii]]) > 1L) {
 				    for (j in 2:length(polys[[ii]])) {
 					lpj <- as(polys[[ii]][[j]], "gpc.poly")
 					lp1 <- append.poly(lp1, lpj)
@@ -236,7 +247,7 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 				}
 				for (j in 1:length(l_1)) {
 				    tp <- gpclib:::intersect(l_1[[j]], lp1)
-				    if (length(tp@pts) > 0) {
+				    if (length(tp@pts) > 0L) {
 					belongs[w_il[i], (il-1)] <- w_il_1[j]
 			    		if (!first_time) {
 					    prom <- which(!is.na(match(
@@ -303,3 +314,59 @@ Rgshhs <- function(fn, xlim=NULL, ylim=NULL, level=4, minarea=0,
 	  list(SP=res)
 	}
 }
+
+# contributed 101018 by Karl Ove Hufthammer
+
+getRgshhsMap = function (fn = system.file("share/gshhs_c.b",
+ package = "maptools"), xlim, ylim, level = 1, shift = TRUE,
+ verbose = TRUE, no.clip = FALSE, properly=FALSE, avoidGEOS=FALSE, checkPolygons=FALSE) 
+{
+    # First try fetching the map directly, possibly with negative coordinates.
+    # Note that some polygons with longitude < 0 use negative coordinates 
+    # (e.g., Great Britain), and some use positve coordinates (e.g., Ireland).
+    #    
+    # (Must use 'try' here, because for example xlim=c(-40,-10)
+    # results in an error, while xlim=c(-40,-5) does not.)
+    map1 = try(Rgshhs(fn, xlim = xlim, ylim = ylim, shift = shift, 
+                    level = level, verbose=verbose, no.clip = no.clip,
+                    properly=properly, avoidGEOS=avoidGEOS,
+                    checkPolygons=checkPolygons)$SP)
+    
+    # Now try fetching the same area using positive coordinates.
+    xl.west = (xlim + 360)%%360
+    if (xl.west[2] < xl.west[1])
+        xl.west[2] = 360
+    map2 = Rgshhs(fn, xlim = xl.west, ylim = ylim, shift = shift, 
+            level = level, verbose=verbose, no.clip = no.clip,
+            properly=properly, avoidGEOS=avoidGEOS,
+            checkPolygons=checkPolygons)$SP
+    
+    # If there where no polygons with negative coordinates, just
+    # use the positive coordinates.
+    if (class(map1) == "try-error") 
+        map.union = map2 else { # Else merge the two maps into one.
+        
+        # First store the original polygon IDs in data frames.
+        df1 = data.frame(polyID = row.names(map1), stringsAsFactors=FALSE)
+        row.names(df1) = df1$polyID
+        map1.spdf = SpatialPolygonsDataFrame(map1, df1)
+        
+        df2 = data.frame(polyID = row.names(map2), stringsAsFactors=FALSE)
+        row.names(df2) = df2$polyID
+        map2.spdf = SpatialPolygonsDataFrame(map2, df2)
+        
+        # Generate new polygon IDs to avoid duplicate IDs when
+        # rbinding the two maps.
+        row.names(map1.spdf) = as.character(seq_along(map1@polygons))
+        row.names(map2.spdf) = as.character(length(map1@polygons) + 
+                        seq_along(map2@polygons))
+        map.merged = rbind(map1.spdf, map2.spdf)
+        
+        # Finally, combine all the polygons, using the
+        # original polyon IDs.
+        map.union = unionSpatialPolygons(map.merged, map.merged$polyID)
+    }
+    map.union
+}
+
+

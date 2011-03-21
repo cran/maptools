@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: shptree.c,v 1.2 2007/11/10 13:17:42 rsbivand Exp $
+ * $Id: shptree.c 182 2011-02-06 14:48:28Z rsbivand $
  *
  * Project:  Shapelib
  * Purpose:  Implementation of quadtree building and searching functions.
@@ -79,7 +79,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-SHP_CVSID("$Id: shptree.c,v 1.2 2007/11/10 13:17:42 rsbivand Exp $")
+SHP_CVSID("$Id: shptree.c 182 2011-02-06 14:48:28Z rsbivand $")
 
 #ifndef TRUE
 #  define TRUE 1

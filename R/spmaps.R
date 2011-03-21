@@ -1,6 +1,6 @@
 .NAmat2xyList <- function(xy) {
 	NAs <- unclass(attr(na.omit(xy), "na.action"))
-	if ((length(NAs) == 1) && (NAs == nrow(xy))) {
+	if ((length(NAs) == 1L) && (NAs == nrow(xy))) {
 		xy <- xy[-nrow(xy)]
 		NAs <- NULL
 	}
@@ -10,7 +10,7 @@
 		xy <- xy[-(NAs[which(diffNAs == 1)] + 1), ]
 		NAs <- unclass(attr(na.omit(xy), "na.action"))
 	}
-	nParts <- length(NAs) + 1
+	nParts <- length(NAs) + 1L
 # two NAs at end of file 070905 RSB
 # no NAs at all RSB 080814
 	if (!is.null(NAs) && nrow(xy) == NAs[length(NAs)])
@@ -64,12 +64,12 @@ map2SpatialLines <- function(map, IDs=NULL, proj4string=CRS(as.character(NA))) {
 pruneMap <- function(map, xlim=NULL, ylim=NULL) {
 	candx <- NULL
 	if (!is.null(xlim)) {
-		if (length(xlim) != 2) stop("xlim must be of length 2")
+		if (length(xlim) != 2L) stop("xlim must be of length 2")
 		candx <- which(map$x < xlim[1] | map$x > xlim[2])
 	}
 	candy <- NULL
 	if (!is.null(ylim)) {
-		if (length(ylim) != 2) stop("ylim must be of length 2")
+		if (length(ylim) != 2L) stop("ylim must be of length 2")
 		candy <- which(map$y < ylim[1] | map$y > ylim[2])
 	}
 	if (is.null(candx) && is.null(candy)) return(map)
@@ -97,11 +97,55 @@ map2SpatialPolygons <- function(map, IDs, proj4string=CRS(as.character(NA))) {
 		nParts <- length(belongs[[i]])
 		srl <- vector(mode="list", length=nParts)
 		for (j in 1:nParts) {
-			srl[[j]] <- Polygon(coords=xyList[[belongs[[i]][j]]])
+                        crds <- xyList[[belongs[[i]][j]]]
+                        if (nrow(crds) == 3) crds <- rbind(crds, crds[1,])
+			srl[[j]] <- Polygon(coords=crds)
 		}
 		Srl[[i]] <- Polygons(srl, ID=IDss[i])
 	}
 	res <- as.SpatialPolygons.PolygonsList(Srl, proj4string=proj4string)
 	res
+}
+
+SpatialPolygons2map <- function(spol) {
+    stopifnot(inherits(spol, "SpatialPolygons"))
+    p4str <- proj4string(spol)
+    if (is.na(p4str)) {
+        warning("no coordinate reference system")
+    } else {
+        if (is.projected(spol)) warning("projected coordinates")
+    }
+    pls <- slot(spol, "polygons")
+    n <- length(pls)
+    names <- NULL
+    range <- c(t(bbox(spol)))
+    x <- NULL
+    y <- NULL
+    for (i in 1:n) {
+        nm <- slot(pls[[i]], "ID")
+        Pls <- slot(pls[[i]], "Polygons")
+        ni <- length(Pls)
+        for (j in 1:ni) {
+            if (ni == 1) {
+                names <- c(names, nm)
+            } else {
+                names <- c(names, paste(nm, j, sep=":"))
+            }
+            crds <- slot(Pls[[j]], "coords")
+            x <- c(x, crds[,1])
+            y <- c(y, crds[,2])
+            if (j < ni) {
+                x <- c(x, as.numeric(NA))
+                y <- c(y, as.numeric(NA))
+            }
+        }
+        if (i < n) {
+            x <- c(x, as.numeric(NA))
+            y <- c(y, as.numeric(NA))
+        }
+    }
+    res <- list(x=x, y=y, range=range, names=names)
+    class(res) <- "map"
+    res
 }
 
