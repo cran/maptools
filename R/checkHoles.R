@@ -8,10 +8,14 @@ gpclibPermitStatus <- function() get("gpclib", envir=.MAPTOOLS_CACHE)
 
 rgeosStatus <- function() get("rgeos", envir=.MAPTOOLS_CACHE)
 
-checkPolygonsHoles <- function(x, properly=TRUE, avoidGEOS=FALSE) {
+checkPolygonsHoles <- function(x, properly=TRUE, avoidGEOS=FALSE,
+    useSTRtree=FALSE) {
     if (rgeosStatus() && !avoidGEOS) {
         require(rgeos)
-        return(checkPolygonsGEOS(x, properly=properly))
+# version check rgeos
+        if (compareVersion(as.character(packageVersion("rgeos")), "0.1-4") < 0)
+            useSTRtree <- FALSE
+        return(checkPolygonsGEOS(x, properly=properly, useSTRtree=useSTRtree))
     } else {
         stopifnot(isTRUE(gpclibPermitStatus()))
 	require(gpclib)
@@ -84,7 +88,7 @@ checkPolygonsHoles <- function(x, properly=TRUE, avoidGEOS=FALSE) {
 }
 
 
-checkPolygonsGEOS <- function(obj, properly=TRUE, force=TRUE) {
+checkPolygonsGEOS <- function(obj, properly=TRUE, force=TRUE, useSTRtree=FALSE) {
     if (!is(obj, "Polygons")) 
         stop("not a Polygons object")
     comm <- try(createPolygonsComment(obj), silent=TRUE)
@@ -98,15 +102,38 @@ checkPolygonsGEOS <- function(obj, properly=TRUE, force=TRUE) {
     n <- length(pls)
     if (n < 1) stop("Polygon list of zero length")
     uniqs <- rep(TRUE, n)
-    SP <- SpatialPolygons(lapply(1:n, function(i) 
+    if (n > 1) {
+      if (useSTRtree) tree1 <- gUnarySTRtreeQuery(obj)
+      SP <- SpatialPolygons(lapply(1:n, function(i) 
         Polygons(list(pls[[i]]), ID=i)))
-    for (i in 1:n) {
-        res <- gEquals(SP[i,], SP[uniqs,], byid=TRUE)
-        res[i] <- FALSE
-        if (any(res)) {
-            wres <- which(res)
-            uniqs[wres[wres > i]] <- FALSE
+      for (i in 1:(n-1)) {
+        if (useSTRtree) {
+            if (!is.null(tree1[[i]])) {
+                res <- try(gEquals(SP[i,], SP[tree1[[i]],], byid=TRUE),
+                    silent=TRUE)
+                if (class(res) == "try-error") {
+                    warning("Polygons object ", slot(obj, "ID"), ", Polygon ",
+                        i, ": ", res)
+                    next
+                }
+                if (any(res)) {
+                    uniqs[as.integer(rownames(res)[res])] <- FALSE
+                }
+            }
+        } else {
+            res <- try(gEquals(SP[i,], SP[uniqs,], byid=TRUE), silent=TRUE)
+            if (class(res) == "try-error") {
+                warning("Polygons object ", slot(obj, "ID"), ", Polygon ",
+                    i, ": ", res)
+                next
+            }
+            res[i] <- FALSE
+            if (any(res)) {
+                wres <- which(res)
+                uniqs[wres[wres > i]] <- FALSE
+            }
         }
+      }
     }
     if (any(!uniqs)) warning(paste("Duplicate Polygon objects dropped:",
         paste(wres, collapse=" ")))
@@ -124,9 +151,21 @@ checkPolygonsGEOS <- function(obj, properly=TRUE, force=TRUE) {
     holes <- rep(FALSE, n)
     SP <- SpatialPolygons(lapply(1:n, function(i) 
         Polygons(list(pls[[i]]), ID=i)))
+    if (useSTRtree) tree2 <- gUnarySTRtreeQuery(SP)
     for (i in 1:(n-1)) {
-        if (properly) res <- gContainsProperly(SP[i,], SP[-(1:i),], byid=TRUE)
-        else res <- gContains(SP[i,], SP[-(1:i),], byid=TRUE)
+        if (useSTRtree) {
+            if (!is.null(tree2[[i]])) {
+                if (properly) res <- gContainsProperly(SP[i,], SP[tree2[[i]],],
+                    byid=TRUE)
+                else res <- gContains(SP[i,], SP[tree2[[i]],], byid=TRUE)
+            } else {
+                res <- FALSE
+            }
+        } else {
+            if (properly) res <- gContainsProperly(SP[i,], SP[-(1:i),],
+                byid=TRUE)
+            else res <- gContains(SP[i,], SP[-(1:i),], byid=TRUE)
+        }
         wres <- which(res)
         if (length(wres) > 0L) {
             nres <- as.integer(rownames(res))

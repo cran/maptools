@@ -1,5 +1,5 @@
 Package: maptools
-Version: 0.8-5
+Version: 0.8-6
 Date: 2011-03-27
 Title: Tools for reading and handling spatial objects
 Encoding: latin1
@@ -20,6 +20,6 @@ Description: Set of tools for manipulating and reading geographic data,
         with packages such as PBSmapping, spatstat, maps, RArcInfo,
         Stata tmap, WinBUGS, Mondrian, and others.
 License: GPL (>= 2)
-Packaged: 2011-03-28 08:29:26 UTC; rsb
+Packaged: 2011-03-30 14:52:09 UTC; rsb
 Repository: CRAN
-Date/Publication: 2011-03-28 10:44:07
+Date/Publication: 2011-03-30 16:23:55
