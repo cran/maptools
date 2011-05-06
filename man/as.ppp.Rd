@@ -66,7 +66,8 @@ as.SpatialGridDataFrame.ppp(from)
 as.SpatialGridDataFrame.im(from)
 as.psp.Line(from, ..., window=NULL, marks=NULL, fatal)
 as.psp.Lines(from, ..., window=NULL, marks=NULL, fatal)
-as.psp.SpatialLines(from, ..., window=NULL, marks=NULL, fatal)
+as.psp.SpatialLines(from, ..., window=NULL, marks=NULL, characterMarks
+                 = FALSE, fatal)
 as.psp.SpatialLinesDataFrame(from, ..., window=NULL, marks=NULL, fatal)
 as.SpatialPolygons.tess(x)
 as.SpatialPolygons.owin(x)
@@ -76,6 +77,7 @@ as.SpatialPolygons.owin(x)
   \item{...}{other arguments to be passed through}
   \item{window}{window as defined in the spatstat package}
   \item{marks}{marks as defined in the spatstat package}
+  \item{characterMarks}{default FALSE, if TRUE, do not convert NULL narks to factor from character}
   \item{fatal}{formal coercion argument}
 }
 \note{When coercing a SpatialPolygons object to an owin object, full 
@@ -109,6 +111,11 @@ mr <- Line(meuse.riv)
 mr_psp <- as(mr, "psp")
 mr_psp
 plot(mr_psp)
+xx <- readShapeLines(system.file("shapes/fylk-val.shp", package="maptools")[1],
+ proj4string=CRS("+proj=utm +zone=33 +datum=WGS84"))
+xx_psp <- as(xx, "psp")
+xx_psp
+plot(xx_psp)
 mg_owin <- as(as(meuse.grid["ffreq"], "SpatialPixelsDataFrame"), "owin")
 mg_owin
 ho_sp <- SpatialPolygons(list(Polygons(list(Polygon(cbind(c(0,1,1,0,0),

@@ -59,6 +59,7 @@ setAs("SpatialPolygons", "owin", function(from) as.owin.SpatialPolygons(from))
 # methods for coercion to Spatial Polygons by Adrian Baddeley
 
 owin2Polygons <- function(x, id="1") {
+	require(spatstat)
   stopifnot(is.owin(x))
   x <- as.polygonal(x)
   closering <- function(df) { df[c(seq(nrow(df)), 1), ] }
@@ -71,6 +72,7 @@ owin2Polygons <- function(x, id="1") {
 }
 
 as.SpatialPolygons.tess <- function(x) {
+	require(spatstat)
   stopifnot(is.tess(x))
   y <- tiles(x)
   nam <- names(y)
@@ -84,6 +86,7 @@ setAs("tess", "SpatialPolygons", function(from) as.SpatialPolygons.tess(from))
 
 
 as.SpatialPolygons.owin <- function(x) {
+	require(spatstat)
   stopifnot(is.owin(x))
   y <- owin2Polygons(x)
   z <- SpatialPolygons(list(y))
@@ -97,7 +100,8 @@ setAs("owin", "SpatialPolygons", function(from) as.SpatialPolygons.owin(from))
 # methods for 'as.psp' for sp classes by Adrian Baddeley
 
 as.psp.Line <- function(from, ..., window=NULL, marks=NULL, fatal) {
-  xy <- from@coords
+	require(spatstat)
+  xy <- slot(from, "coords")
   df <- as.data.frame(cbind(xy[-nrow(xy), , drop=FALSE], xy[-1, ,
 drop=FALSE]))
   if(is.null(window)) {
@@ -111,8 +115,14 @@ drop=FALSE]))
 setAs("Line", "psp", function(from) as.psp.Line(from))
   
 as.psp.Lines <- function(from, ..., window=NULL, marks=NULL, fatal) {
-  y <- lapply(from@Lines, as.psp.Line, window=window)
-  z <- superimposePSP(y, window=window)
+	require(spatstat)
+  y <- lapply(slot(from, "Lines"), as.psp.Line, window=window)
+  if (as.character(packageVersion("spatstat")) < "1.22.0") {
+    z <- superimposePSP(y, window=window)
+  } else {
+    z <- do.call(superimpose,c(y,list(W=window)))
+#    z <- superimpose(y, window=window)
+  }
   if(!is.null(marks))
     marks(z) <- marks
   return(z)
@@ -120,18 +130,28 @@ as.psp.Lines <- function(from, ..., window=NULL, marks=NULL, fatal) {
 
 setAs("Lines", "psp", function(from) as.psp.Lines(from))
 
-as.psp.SpatialLines <- function(from, ..., window=NULL, marks=NULL, fatal) {
+as.psp.SpatialLines <- function(from, ..., window=NULL, marks=NULL,
+                                 characterMarks=FALSE, fatal) {
+	require(spatstat)
   if(is.null(window)) {
-    w <- from@bbox
+    w <- slot(from, "bbox")
     window <- owin(w[1,], w[2,])
   }
-  lin <- from@lines
+  lin <- slot(from, "lines")
   y <- lapply(lin, as.psp.Lines, window=window)
-  id <- unlist(lapply(lin, function(s) { s@ID }))
+  id <- row.names(from)
   if(is.null(marks))
-    for(i in seq(y)) 
-      marks(y[[i]]) <- id[i]
-  z <- do.call("superimposePSP", list(y, window=window))
+    for (i in seq(y)) 
+      marks(y[[i]]) <- if(characterMarks) id[i] else factor(id[i])
+# modified 110401 Rolf Turner
+#    for(i in seq(y)) 
+#      marks(y[[i]]) <- id[i]
+  if (as.character(packageVersion("spatstat")) < "1.22.0") {
+    z <- do.call("superimposePSP", list(y, window=window))
+  } else {
+#    z <- do.call("superimpose", list(y, window=window))
+    z <- do.call("superimpose", c(y, list(W = window)))
+  }
   if(!is.null(marks))
     marks(z) <- marks
   return(z)
@@ -140,6 +160,7 @@ as.psp.SpatialLines <- function(from, ..., window=NULL, marks=NULL, fatal) {
 setAs("SpatialLines", "psp", function(from) as.psp.SpatialLines(from))
 
 as.psp.SpatialLinesDataFrame <- function(from, ..., window=NULL, marks=NULL, fatal) {
+	require(spatstat)
   y <- as(from, "SpatialLines")
   z <- as.psp(y, window=window, marks=marks)
   if(is.null(marks)) {
