@@ -115,7 +115,7 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-gpclibPermit()
+if (!rgeosStatus()) gpclibPermit()
 gshhs.c.b <- system.file("share/gshhs_c.b", package="maptools")
 WEx <- c(-12, 3)
 WEy <- c(48, 59)
@@ -317,7 +317,7 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-gpclibPermit()
+if (!rgeosStatus()) gpclibPermit()
 nc1 <- readShapePoly(system.file("shapes/sids.shp", package="maptools")[1],
  proj4string=CRS("+proj=longlat +ellps=clrk66"))
 pl <- slot(nc1, "polygons")
@@ -770,7 +770,7 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 ## Not run: 
-##D gpclibPermit()
+##D if (!rgeosStatus()) gpclibPermit()
 ##D library(maps)
 ##D world <- map("world", fill=TRUE, col="transparent", plot=FALSE)
 ##D worldSpP <- map2SpatialPolygons(world, world$names, CRS("+proj=longlat"))
@@ -1325,7 +1325,7 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-gpclibPermit()
+if (!rgeosStatus()) gpclibPermit()
 nc1 <- readShapePoly(system.file("shapes/sids.shp", package="maptools")[1],
  proj4string=CRS("+proj=longlat +datum=NAD27"))
 lps <- coordinates(nc1)
