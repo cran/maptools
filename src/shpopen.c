@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: shpopen.c 182 2011-02-06 14:48:28Z rsbivand $
+ * $Id: shpopen.c 220 2011-11-14 21:35:15Z rsbivand $
  *
  * Project:  Shapelib
  * Purpose:  Implementation of core Shapefile read/write functions.
@@ -200,7 +200,7 @@
 #include <string.h>
 #include <stdio.h>
 
-SHP_CVSID("$Id: shpopen.c 182 2011-02-06 14:48:28Z rsbivand $")
+SHP_CVSID("$Id: shpopen.c 220 2011-11-14 21:35:15Z rsbivand $")
 
 typedef unsigned char uchar;
 
@@ -984,7 +984,8 @@ SHPCreateObject( int nSHPType, int nShapeId, int nParts,
             CPLError( CE_Failure, CPLE_AppDefined,
                       "panPartStart[0] != 0, patching internally.  Please fix your code!\n" );
 #else
-            fprintf( stderr, "panPartStart[0] != 0, patching internally.  Please fix your code!\n" );
+// RSB 111114
+            warning("panPartStart[0] != 0, patching internally.  Please fix your code!\n" );
 #endif
             psObject->panPartStart[0] = 0;
         }

@@ -201,8 +201,8 @@ flush(stderr()); flush(stdout())
 ###   as.psp.SpatialLines as.psp.SpatialLinesDataFrame
 ###   coerce,Line,psp-method coerce,Lines,psp-method
 ###   coerce,SpatialLines,psp-method
-###   coerce,SpatialLinesDataFrame,psp-method
-###   coerce,im,SpatialGridDataFrame-method
+###   coerce,SpatialLinesDataFrame,psp-method as.SpatialLines.psp
+###   coerce,psp,SpatialLines-method coerce,im,SpatialGridDataFrame-method
 ###   coerce,ppp,SpatialGridDataFrame-method
 ###   coerce,ppp,SpatialPointsDataFrame-method
 ###   coerce,ppp,SpatialPoints-method as.SpatialPointsDataFrame.ppp
@@ -236,11 +236,15 @@ mr <- Line(meuse.riv)
 mr_psp <- as(mr, "psp")
 mr_psp
 plot(mr_psp)
+xx_back <- as(mr_psp, "SpatialLines")
+plot(xx_back)
 xx <- readShapeLines(system.file("shapes/fylk-val.shp", package="maptools")[1],
  proj4string=CRS("+proj=utm +zone=33 +datum=WGS84"))
 xx_psp <- as(xx, "psp")
 xx_psp
 plot(xx_psp)
+xx_back <- as(xx_psp, "SpatialLines")
+plot(xx_back)
 mg_owin <- as(as(meuse.grid["ffreq"], "SpatialPixelsDataFrame"), "owin")
 mg_owin
 ho_sp <- SpatialPolygons(list(Polygons(list(Polygon(cbind(c(0,1,1,0,0),
