@@ -180,6 +180,24 @@ plot(o1, axes=TRUE)
 
 
 cleanEx()
+nameEx("SplashDams")
+### * SplashDams
+
+flush(stderr()); flush(stdout())
+
+### Name: SplashDams
+### Title: Data for Splash Dams in western Oregon
+### Aliases: SplashDams
+### Keywords: datasets
+
+### ** Examples
+
+data(SplashDams)
+plot(SplashDams, axes=TRUE)
+
+
+
+cleanEx()
 nameEx("as.ppp")
 ### * as.ppp
 
@@ -655,6 +673,35 @@ options(example.ask=opt_exask)
 
 
 graphics::par(get("par.postscript", pos = 'CheckExEnv'))
+cleanEx()
+nameEx("kmlPoints")
+### * kmlPoints
+
+flush(stderr()); flush(stdout())
+
+### Name: kmlPoints
+### Title: Create and write a KML file on the basis of a given Points
+###   object
+### Aliases: kmlPoints
+### Keywords: spatial
+
+### ** Examples
+
+data(SplashDams)
+num <- length(SplashDams)
+td <- tempdir()
+kmlfile <- paste(td, "OregonSplashDams.kml", sep="/")
+kmlname <- "Oregon Splash Dams"
+kmldescription <- "Data for Splash Dams in western Oregon. See http://www.fs.fed.us/pnw/lwm/aem/people/burnett.html#projects_activities for more information."
+icon <- "http://google.com/mapfiles/kml/paddle/wht-diamond.png"
+name <- paste("Dam on",SplashDams$streamName)
+description <- paste("<b>owner:</b>",SplashDams$owner,"<br><b>dates:</b>",SplashDams$datesUsed)
+
+kmlPoints(SplashDams, kmlfile=kmlfile, name=name, description=description,
+          icon=icon, kmlname=kmlname, kmldescription=kmldescription)
+
+
+
 cleanEx()
 nameEx("kmlPolygon")
 ### * kmlPolygon
@@ -1197,6 +1244,29 @@ xx2 <- xx[xx$CNTY_ID >= 1982,]
 xx3 <- spRbind(xx2, xx1)
 summary(xx3)
 xx3$FIPSNO
+
+
+
+cleanEx()
+nameEx("state.vbm")
+### * state.vbm
+
+flush(stderr()); flush(stdout())
+
+### Name: state.vbm
+### Title: US State Visibility Based Map
+### Aliases: state.vbm
+### Keywords: datasets
+
+### ** Examples
+
+  data(state.vbm)
+  plot(state.vbm)
+
+  tmp <- state.x77[,'HS Grad']
+  tmp2 <- cut(tmp, seq(min(tmp),max(tmp), length.out=11),
+    include.lowest=TRUE)
+  plot(state.vbm,col=cm.colors(10)[tmp2])
 
 
 
