@@ -180,6 +180,27 @@ plot(o1, axes=TRUE)
 
 
 cleanEx()
+nameEx("SpatialLinesMidPoints")
+### * SpatialLinesMidPoints
+
+flush(stderr()); flush(stdout())
+
+### Name: SpatialLinesMidPoints
+### Title: Line midpoints
+### Aliases: SpatialLinesMidPoints
+### Keywords: spatial
+
+### ** Examples
+
+xx <- readShapeLines(system.file("shapes/fylk-val.shp", package="maptools")[1],
+ proj4string=CRS("+proj=utm +zone=33 +datum=WGS84"))
+plot(xx, col="blue")
+spdf <- SpatialLinesMidPoints(xx)
+plot(spdf, col="orange", add=TRUE)
+
+
+
+cleanEx()
 nameEx("SplashDams")
 ### * SplashDams
 
@@ -808,6 +829,44 @@ plot(nor_coast_lines_sp, col="blue", add=TRUE)
 
 
 cleanEx()
+nameEx("nearestPointOnLine")
+### * nearestPointOnLine
+
+flush(stderr()); flush(stdout())
+
+### Name: nearestPointOnLine
+### Title: Get the nearest point on a line to a given point
+### Aliases: nearestPointOnLine
+### Keywords: spatial
+
+### ** Examples
+
+coordsLine = cbind(c(1,2,3),c(3,2,2))
+coordsPoint = c(1.2,1.5)
+nearestPointOnLine(coordsLine, coordsPoint)
+
+
+
+cleanEx()
+nameEx("nearestPointOnSegment")
+### * nearestPointOnSegment
+
+flush(stderr()); flush(stdout())
+
+### Name: nearestPointOnSegment
+### Title: Get the nearest point on a segment to a given point
+### Aliases: nearestPointOnSegment
+### Keywords: spatial
+
+### ** Examples
+
+segment = cbind(c(1,2),c(1,1.5))
+point = c(1.2,1.5)
+nearestPointOnSegment(segment, point)
+
+
+
+cleanEx()
 nameEx("nowrapRecenter")
 ### * nowrapRecenter
 
@@ -1104,6 +1163,40 @@ sapply(pls, function(i) sapply(slot(i, "Polygons"), slot, "hole"))
 pls1 <- lapply(pls, checkPolygonsHoles)
 sapply(pls1, function(i) sapply(slot(i, "Polygons"), slot, "hole"))
 plot(SpatialPolygons(pls1), axes=TRUE, col=1:3)
+
+
+
+cleanEx()
+nameEx("snapPointsToLines")
+### * snapPointsToLines
+
+flush(stderr()); flush(stdout())
+
+### Name: snapPointsToLines
+### Title: Snap a set of points to a set of lines
+### Aliases: snapPointsToLines
+### Keywords: spatial
+
+### ** Examples
+
+# From the sp vignette
+l1 = cbind(c(1,2,3),c(3,2,2))
+l1a = cbind(l1[,1]+.05,l1[,2]+.05)
+l2 = cbind(c(1,2,3),c(1,1.5,1))
+Sl1 = Line(l1)
+Sl1a = Line(l1a)
+Sl2 = Line(l2)
+S1 = Lines(list(Sl1, Sl1a), ID="a")
+S2 = Lines(list(Sl2), ID="b")
+Sl = SpatialLines(list(S1,S2))
+df = data.frame(z = c(1,2), row.names=sapply(slot(Sl, "lines"), function(x) slot(x, "ID")))
+Sldf = SpatialLinesDataFrame(Sl, data = df)
+
+xc = c(1.2,1.5,2.5)
+yc = c(1.5,2.2,1.6)
+Spoints = SpatialPoints(cbind(xc, yc))
+
+snapPointsToLines(Spoints, Sldf)
 
 
 
