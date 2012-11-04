@@ -136,6 +136,9 @@ BNLp <- Rgshhs(gshhs.c.b, xlim=BNLx, ylim=BNLy)
 BNLl <- Rgshhs(wdb_lines, xlim=BNLx, ylim=BNLy)
 plot(BNLp$SP, col="khaki", pbg="azure2", xlim=BNLx, ylim=BNLy, xaxs="i", yaxs="i", axes=TRUE)
 lines(BNLl$SP)
+xlims <- c(0,360)
+ylims <- c(-90,90)
+world <- Rgshhs(gshhs.c.b, xlim=xlims, ylim=ylims, level=1, checkPolygons=TRUE)
 
 
 
@@ -154,8 +157,8 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-library(PBSmapping)
-library(maps)
+if(require(PBSmapping)) {
+if(require(maps)) {
 nor_coast_lines <- map("world", interior=FALSE, plot=FALSE, xlim=c(4,32),
  ylim=c(58,72))
 nor_coast_lines <- pruneMap(nor_coast_lines, xlim=c(4,32), ylim=c(58,72))
@@ -176,6 +179,7 @@ summary(nor_coast_poly_PS)
 plotPolys(nor_coast_poly_PS)
 o1 <- PolySet2SpatialPolygons(nor_coast_poly_PS)
 plot(o1, axes=TRUE)
+}}
 
 
 
@@ -790,6 +794,50 @@ invisible(title(main=paste("Columbus OH: residential burglaries and vehicle",
 
 
 cleanEx()
+nameEx("lineLabel")
+### * lineLabel
+
+flush(stderr()); flush(stdout())
+
+### Name: lineLabel
+### Title: Label placement with spplot and lattice.
+### Aliases: lineLabel sp.lineLabel sp.lineLabel-methods
+###   sp.lineLabel,Lines-method sp.lineLabel,SpatialLines-method
+
+### ** Examples
+
+data(meuse.grid)
+coordinates(meuse.grid) = ~x+y
+proj4string(meuse.grid) <- CRS("+init=epsg:28992")
+gridded(meuse.grid) = TRUE
+
+data(meuse)
+coordinates(meuse) = ~x+y
+data(meuse.riv)
+meuse.sl <- SpatialLines(list(Lines(list(Line(meuse.riv)), "1")))
+
+ids <- sapply(meuse.sl@lines, function(l)l@ID)
+labs <- 'Meuse River'
+names(labs) <- ids
+
+library(RColorBrewer)
+myCols <- adjustcolor(colorRampPalette(brewer.pal(n=9, 'Reds'))(100), .85)
+
+sl1 <- list('sp.lineLabel', meuse.sl, label=labs,
+            position='below',
+            spar=.2,
+            col='darkblue', cex=1,
+            fontfamily='Palatino',
+            fontface=2)
+
+spplot(meuse.grid["dist"],
+       col.regions=myCols, 
+       sp.layout = sl1)
+
+
+
+
+cleanEx()
 nameEx("map2SpatialPolygons")
 ### * map2SpatialPolygons
 
@@ -802,7 +850,7 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-library(maps)
+if(require(maps)) {
 nor_coast_poly <- map("world", "norway", fill=TRUE, col="transparent",
  plot=FALSE)
 range(nor_coast_poly$x, na.rm=TRUE)
@@ -825,6 +873,7 @@ nor_coast_lines_sp <- map2SpatialLines(nor_coast_lines,
  proj4string=CRS("+proj=longlat +datum=wgs84"))
 plot(nor_coast_poly_sp, col="grey", axes=TRUE)
 plot(nor_coast_lines_sp, col="blue", add=TRUE)
+}
 
 
 
@@ -925,14 +974,15 @@ flush(stderr()); flush(stdout())
 nc1 <- readShapePoly(system.file("shapes/sids.shp", package="maptools")[1], ID="FIPS")
 plot(nc1)
 text(coordinates(nc1), labels=row.names(nc1), cex=0.6)
-library(maps)
+if(require(maps)){
 ncmap <- map("county", "north carolina", fill=TRUE, col="transparent",
  plot=FALSE)
 IDs <- sapply(strsplit(ncmap$names, "[,:]"), function(x) x[2])
 nc2 <- map2SpatialPolygons(ncmap, IDs)
 plot(nc2)
 text(coordinates(nc2), labels=row.names(nc2), cex=0.6)
-library(RArcInfo)
+}
+if(require(RArcInfo)) {
 td <- tempdir()
 tmpcover <- paste(td, "nc", sep="/")
 if (!file.exists(tmpcover)) e00toavc(system.file("share/co37_d90.e00",
@@ -945,12 +995,13 @@ IDs <- paste(pat$ST[-1], pat$CO[-1], sep="")
 nc3 <- pal2SpatialPolygons(arc, pal, IDs=IDs)
 plot(nc3)
 text(coordinates(nc3), labels=row.names(nc3), cex=0.6)
+}
 
 
 
 cleanEx()
-nameEx("pointLabel")
-### * pointLabel
+nameEx("pointLabelBase")
+### * pointLabelBase
 
 flush(stderr()); flush(stdout())
 
@@ -970,6 +1021,63 @@ pointLabel(x, y, as.character(round(x,5)), offset = 0, cex = .7)
 plot(x, y, col = "red", pch = 20)
 pointLabel(x, y, expression(over(alpha, beta[123])), offset = 0, cex = .8)
 
+
+
+
+cleanEx()
+nameEx("pointLabelLattice")
+### * pointLabelLattice
+
+flush(stderr()); flush(stdout())
+
+### Name: panel.pointLabel
+### Title: Label placement with spplot and lattice.
+### Aliases: panel.pointLabel sp.pointLabel sp.pointLabel-methods
+###   sp.pointLabel,SpatialPoints-method
+
+### ** Examples
+
+n <- 15
+x <- rnorm(n)*10
+y <- rnorm(n)*10
+labels <- as.character(round(x, 5))
+
+
+myTheme <- list(add.text=list(
+                  cex=0.7,
+                  col='midnightblue',
+                  fontface=2,
+                  fontfamily='mono'))
+
+xyplot(y~x,
+       labels=labels,
+       par.settings=myTheme, 
+       panel=function(x, y, labels, ...){
+         panel.xyplot(x, y, ...)
+         panel.pointLabel(x, y, labels=labels, ...)
+       })
+
+
+
+data(meuse.grid)
+coordinates(meuse.grid) = ~x+y
+proj4string(meuse.grid) <- CRS("+init=epsg:28992")
+gridded(meuse.grid) = TRUE
+
+library(RColorBrewer)
+myCols <- adjustcolor(colorRampPalette(brewer.pal(n=9, 'Reds'))(100), .85)
+
+pts <- spsample(meuse.grid, n=15, type="random")
+
+Rauthors <- readLines(file.path(R.home("doc"), "AUTHORS"))[9:28]
+someAuthors <- Rauthors[seq_along(pts)]
+
+sl1 <- list('sp.points', pts, pch=19, cex=.8, col='midnightblue')
+sl2 <- list('sp.pointLabel', pts, label=someAuthors,
+            cex=0.7, col='midnightblue',
+            fontfamily='Palatino')
+
+spplot(meuse.grid["dist"], col.regions=myCols, sp.layout=list(sl1, sl2))
 
 
 
