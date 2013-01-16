@@ -1,6 +1,6 @@
 Package: maptools
-Version: 0.8-21
-Date: 2012-11-19
+Version: 0.8-22
+Date: 2013-01-16
 Title: Tools for reading and handling spatial objects
 Author: Nicholas J. Lewin-Koh and Roger Bivand, contributions by Edzer
         J. Pebesma, Eric Archer, Adrian Baddeley, Hans-Jörg Bibiko,
@@ -25,6 +25,6 @@ Description: Set of tools for manipulating and reading geographic data,
         Stata tmap, WinBUGS, Mondrian, and others.
 License: GPL (>= 2)
 URL: http://r-forge.r-project.org/projects/maptools/
-Packaged: 2012-12-21 12:39:51 UTC; rsb
+Packaged: 2013-01-16 09:26:49 UTC; rsb
 Repository: CRAN
-Date/Publication: 2012-12-21 16:39:02
+Date/Publication: 2013-01-16 10:43:26

@@ -800,7 +800,7 @@ nameEx("lineLabel")
 flush(stderr()); flush(stdout())
 
 ### Name: lineLabel
-### Title: Label placement with spplot and lattice.
+### Title: Line label placement with spplot and lattice.
 ### Aliases: lineLabel sp.lineLabel label sp.lineLabel-methods
 ###   label-methods sp.lineLabel,Lines-method
 ###   sp.lineLabel,SpatialLines-method label,SpatialLines-method
