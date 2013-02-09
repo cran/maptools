@@ -1,4 +1,4 @@
-/*	$Id: Rgshhs.c 222 2011-12-19 09:00:45Z rsbivand $
+/*	$Id: Rgshhs.c 254 2013-02-09 10:22:26Z rsbivand $
  *
  *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -85,7 +85,7 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 	double w, e, s, n, area, lon, lat, scale = 10.0;
 	char source;
 	char msg[255];
-	char *name[2] = {"polygon", "line"};
+	const char *name[2] = {"polygon", "line"};
 	int k, line, max_east = 270000000, n_read, /*flip,*/ Level, version, greenwich, src, m, river;
 	struct POINT p;
 	struct GSHHS h;
