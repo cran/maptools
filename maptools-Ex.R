@@ -3,7 +3,7 @@ source(file.path(R.home("share"), "R", "examples-header.R"))
 options(warn = 1)
 library('maptools')
 
-assign(".oldSearch", search(), pos = 'CheckExEnv')
+base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 cleanEx()
 nameEx("CCmaps")
 ### * CCmaps
@@ -661,6 +661,31 @@ close(kmlFile)
 
 
 cleanEx()
+nameEx("kmlLines")
+### * kmlLines
+
+flush(stderr()); flush(stdout())
+
+### Name: kmlLines
+### Title: Create and write a KML file on the basis of a given Lines object
+### Aliases: kmlLines
+### Keywords: spatial
+
+### ** Examples
+
+# Maptools library required
+library(maptools)
+# load line object
+rivers <- readShapeSpatial(system.file("shapes/fylk-val-ll.shp",
+                           package="maptools")[1], proj4string=CRS("+proj=longlat"))
+# create kml file
+kmlLines(rivers, kmlfile = "rivers.kml", name = "R Lines", 
+         description = "Hello!", col = "blue", visibility = 1, lwd = 1, 
+         kmlname = "", kmldescription = "")
+
+
+
+cleanEx()
 nameEx("kmlOverlay")
 ### * kmlOverlay
 
@@ -765,6 +790,46 @@ cat(unlist(out["style",]), file=kmlFile, sep="\n")
 cat(unlist(out["content",]), file=kmlFile, sep="\n")
 cat(kmlPolygon()$footer, file=kmlFile, sep="\n")
 close(kmlFile)
+
+
+
+cleanEx()
+nameEx("kmlPolygons")
+### * kmlPolygons
+
+flush(stderr()); flush(stdout())
+
+### Name: kmlPolygons
+### Title: Create and write a KML file on the basis of a given Polygons
+###   object or list of Polygons or SpatialPolygonsDataFrame
+### Aliases: kmlPolygons
+### Keywords: spatial
+
+### ** Examples
+
+data(wrld_simpl)
+## creates a KML file containing the polygons of a political world map
+kmlPolygons(wrld_simpl, kmlfile = "worldPolitical.kml", name = "KML Polygons", 
+         description = "the world", col = "red",
+         visibility = 1, lwd = 1, border = "white", kmlname = "R Test", 
+         kmldescription = "This is <b>only</b> a <a href='http://www.r-project.org'>R</a> test.")
+
+data(wrld_simpl)
+## create a KML file containing the polygons of Brazil, Uganda, and Canada
+regions <- c("Brazil","Canada","Uganda")
+wrld_simpl_subset <- wrld_simpl[wrld_simpl$NAME %in% regions,]
+kmlPolygons(wrld_simpl_subset, kmlfile = "worldPoliticalSubset.kml", name = "KML Polygons subset", 
+         description = "three countries", col = "blue", 
+         visibility = 1, lwd = 1, border = "white", kmlname = "R Test 2", 
+         kmldescription = "This is <b>only</b> a <a href='http://www.r-project.org'>R</a> test.")
+## combine to make a list of polygon objects to plot
+polList <- c(regions,wrld_simpl)
+kmlPolygons(wrld_simpl_subset, kmlfile = "worldPoliticalandSubset.kml", name = "KML Polygons subset", 
+         description = "three countries highlighted in world", 
+         col = sample(colours(), length(polList)), visibility = 1, lwd = 1, border = "white", 
+         kmlname = "R Test 2", 
+         kmldescription = "This is <b>only</b> a <a href='http://www.r-project.org'>R</a> test.")
+
 
 
 
@@ -874,7 +939,7 @@ nor_coast_poly <- map("world", "norway", fill=TRUE, col="transparent",
 nor_coast_poly$names
 IDs <- sapply(strsplit(nor_coast_poly$names, ":"), function(x) x[1])
 nor_coast_poly_sp <- map2SpatialPolygons(nor_coast_poly, IDs=IDs,
- proj4string=CRS("+proj=longlat +datum=wgs84"))
+ proj4string=CRS("+proj=longlat +datum=WGS84"))
 sapply(slot(nor_coast_poly_sp, "polygons"),
  function(x) length(slot(x, "Polygons")))
 plot(nor_coast_poly_sp, col="grey", axes=TRUE)
@@ -884,7 +949,7 @@ plot(nor_coast_lines, type="l")
 nor_coast_lines <- pruneMap(nor_coast_lines, xlim=c(4,32), ylim=c(58,72))
 lines(nor_coast_lines, col="red")
 nor_coast_lines_sp <- map2SpatialLines(nor_coast_lines,
- proj4string=CRS("+proj=longlat +datum=wgs84"))
+ proj4string=CRS("+proj=longlat +datum=WGS84"))
 plot(nor_coast_poly_sp, col="grey", axes=TRUE)
 plot(nor_coast_lines_sp, col="blue", add=TRUE)
 }
@@ -1644,7 +1709,8 @@ plot(wrld_simpl)
 
 ### * <FOOTER>
 ###
-cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
+options(digits = 7L)
+base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
 grDevices::dev.off()
 ###
 ### Local variables: ***
