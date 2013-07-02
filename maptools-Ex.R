@@ -742,10 +742,12 @@ num <- length(SplashDams)
 td <- tempdir()
 kmlfile <- paste(td, "OregonSplashDams.kml", sep="/")
 kmlname <- "Oregon Splash Dams"
-kmldescription <- "Data for Splash Dams in western Oregon. See http://www.fs.fed.us/pnw/lwm/aem/people/burnett.html#projects_activities for more information."
+kmldescription <- paste("Data for Splash Dams in western Oregon.",
+ "See http://www.fs.fed.us/pnw/lwm/aem/people/burnett.html#projects_activities",
+ "for more information.")
 icon <- "http://google.com/mapfiles/kml/paddle/wht-diamond.png"
 name <- paste("Dam on",SplashDams$streamName)
-description <- paste("<b>owner:</b>",SplashDams$owner,"<br><b>dates:</b>",SplashDams$datesUsed)
+description <- paste("<b>owner:</b>", SplashDams$owner, "<br><b>dates:</b>", SplashDams$datesUsed)
 
 kmlPoints(SplashDams, kmlfile=kmlfile, name=name, description=description,
           icon=icon, kmlname=kmlname, kmldescription=kmldescription)
@@ -818,17 +820,17 @@ data(wrld_simpl)
 ## create a KML file containing the polygons of Brazil, Uganda, and Canada
 regions <- c("Brazil","Canada","Uganda")
 wrld_simpl_subset <- wrld_simpl[wrld_simpl$NAME %in% regions,]
-kmlPolygons(wrld_simpl_subset, kmlfile = "worldPoliticalSubset.kml", name = "KML Polygons subset", 
-         description = "three countries", col = "blue", 
-         visibility = 1, lwd = 1, border = "white", kmlname = "R Test 2", 
-         kmldescription = "This is <b>only</b> a <a href='http://www.r-project.org'>R</a> test.")
+kmlPolygons(wrld_simpl_subset, kmlfile = "worldPoliticalSubset.kml",
+ name = "KML Polygons subset", description = "three countries", col = "blue", 
+ visibility = 1, lwd = 1, border = "white", kmlname = "R Test 2", 
+ kmldescription = "This is <b>only</b> a <a href='http://www.r-project.org'>R</a> test.")
 ## combine to make a list of polygon objects to plot
 polList <- c(regions,wrld_simpl)
-kmlPolygons(wrld_simpl_subset, kmlfile = "worldPoliticalandSubset.kml", name = "KML Polygons subset", 
-         description = "three countries highlighted in world", 
-         col = sample(colours(), length(polList)), visibility = 1, lwd = 1, border = "white", 
-         kmlname = "R Test 2", 
-         kmldescription = "This is <b>only</b> a <a href='http://www.r-project.org'>R</a> test.")
+kmlPolygons(wrld_simpl_subset, kmlfile = "worldPoliticalandSubset.kml",
+ name = "KML Polygons subset", description = "three countries highlighted in world", 
+ col = sample(colours(), length(polList)), visibility = 1, lwd = 1, border = "white", 
+ kmlname = "R Test 2", 
+ kmldescription = "This is <b>only</b> a <a href='http://www.r-project.org'>R</a> test.")
 
 
 
@@ -1598,15 +1600,17 @@ day_length <- down$time - up$time
 plot(Hels_seq, day_length, type="l")
 
 ## Using a grid of spatial points for the same point in time
-grd <- GridTopology(c(-179,-89), c(1,1), c(359,179))
-SP <- SpatialPoints(coordinates(grd),
-                    proj4string=CRS("+proj=longlat +datum=WGS84"))
-wint <- as.POSIXct("2004-12-21", tz="GMT")
-win <- crepuscule(SP, wint, solarDep=6, direction="dawn")
-SPDF <- SpatialGridDataFrame(grd,
- proj4string=CRS("+proj=longlat +datum=WGS84"),
- data=data.frame(winter=win))
-image(SPDF, axes=TRUE, col=cm.colors(40))
+## Not run: 
+##D grd <- GridTopology(c(-179,-89), c(1,1), c(359,179))
+##D SP <- SpatialPoints(coordinates(grd),
+##D                     proj4string=CRS("+proj=longlat +datum=WGS84"))
+##D wint <- as.POSIXct("2004-12-21", tz="GMT")
+##D win <- crepuscule(SP, wint, solarDep=6, direction="dawn")
+##D SPDF <- SpatialGridDataFrame(grd,
+##D  proj4string=CRS("+proj=longlat +datum=WGS84"),
+##D  data=data.frame(winter=win))
+##D image(SPDF, axes=TRUE, col=cm.colors(40))
+## End(Not run)
 
 
 
