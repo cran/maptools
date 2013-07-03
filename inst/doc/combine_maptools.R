@@ -2,7 +2,7 @@
 ### Encoding: UTF-8
 
 ###################################################
-### code chunk number 1: combine_maptools.Rnw:40-43
+### code chunk number 1: combine_maptools.Rnw:44-47
 ###################################################
 owidth <- getOption("width")
 options("width"=90)
@@ -55,7 +55,7 @@ options("width"=90)
 
 
 ###################################################
-### code chunk number 8: combine_maptools.Rnw:97-107
+### code chunk number 8: combine_maptools.Rnw:101-111
 ###################################################
 owd <- getwd()
 setwd(system.file("shapes", package="maptools"))
@@ -70,7 +70,7 @@ setwd(owd)
 
 
 ###################################################
-### code chunk number 9: combine_maptools.Rnw:113-120
+### code chunk number 9: combine_maptools.Rnw:117-124
 ###################################################
 .PngNo <- .PngNo + 1; file <- paste("Fig-bitmap-", .PngNo, ".pdf", sep="")
 pdf(file=file, width = 6.5, height = 5, pointsize = 12, bg = "white")
@@ -86,13 +86,13 @@ cat("\\includegraphics[width=0.95\\textwidth]{", file, "}\n\n", sep="")
 
 
 ###################################################
-### code chunk number 10: combine_maptools.Rnw:144-145
+### code chunk number 10: combine_maptools.Rnw:148-149
 ###################################################
 library(maptools)
 
 
 ###################################################
-### code chunk number 11: combine_maptools.Rnw:147-151
+### code chunk number 11: combine_maptools.Rnw:151-155
 ###################################################
 names(sc90)
 sc90a <- spChFIDs(sc90, paste(sc90$ST, sc90$CO, sep=""))
@@ -101,49 +101,49 @@ names(sc90a)
 
 
 ###################################################
-### code chunk number 12: combine_maptools.Rnw:153-154
+### code chunk number 12: combine_maptools.Rnw:157-158
 ###################################################
 proj4string(sc90a) <- CRS(proj4string(sc90a))
 
 
 ###################################################
-### code chunk number 13: combine_maptools.Rnw:165-166
+### code chunk number 13: combine_maptools.Rnw:169-170
 ###################################################
 names(nc90)
 
 
 ###################################################
-### code chunk number 14: combine_maptools.Rnw:168-169 (eval = FALSE)
+### code chunk number 14: combine_maptools.Rnw:172-173 (eval = FALSE)
 ###################################################
 ## nc90a <- spChFIDs(nc90, paste(nc90$ST, nc90$CO, sep=""))
 
 
 ###################################################
-### code chunk number 15: combine_maptools.Rnw:171-172
+### code chunk number 15: combine_maptools.Rnw:175-176
 ###################################################
 try1 <- try(spChFIDs(nc90, paste(nc90$ST, nc90$CO, sep="")))
 
 
 ###################################################
-### code chunk number 16: combine_maptools.Rnw:174-175
+### code chunk number 16: combine_maptools.Rnw:178-179
 ###################################################
 cat(try1)
 
 
 ###################################################
-### code chunk number 17: combine_maptools.Rnw:185-186
+### code chunk number 17: combine_maptools.Rnw:189-190
 ###################################################
 table(table(paste(nc90$ST, nc90$CO, sep="")))
 
 
 ###################################################
-### code chunk number 18: combine_maptools.Rnw:212-213
+### code chunk number 18: combine_maptools.Rnw:216-217
 ###################################################
 nc90a <- unionSpatialPolygons(nc90, IDs=paste(nc90$ST, nc90$CO, sep=""))
 
 
 ###################################################
-### code chunk number 19: combine_maptools.Rnw:223-226
+### code chunk number 19: combine_maptools.Rnw:227-230
 ###################################################
 nc90_df <- as(nc90, "data.frame")[!duplicated(nc90$CO),-(1:4)]
 row.names(nc90_df) <- paste(nc90_df$ST, nc90_df$CO, sep="")
@@ -151,7 +151,7 @@ nc90b <- SpatialPolygonsDataFrame(nc90a, nc90_df)
 
 
 ###################################################
-### code chunk number 20: combine_maptools.Rnw:246-253
+### code chunk number 20: combine_maptools.Rnw:250-257
 ###################################################
 va90a <- spChFIDs(va90, paste(va90$ST, va90$CO, sep=""))
 va90a <- va90a[,-(1:4)]
@@ -163,7 +163,7 @@ va90b <- SpatialPolygonsDataFrame(vaSP, data=as(va90a, "data.frame"))
 
 
 ###################################################
-### code chunk number 21: combine_maptools.Rnw:293-297
+### code chunk number 21: combine_maptools.Rnw:297-301
 ###################################################
 nc_sc_va90 <- spRbind(spRbind(nc90b, sc90a), va90b)
 FIPS <- row.names(nc_sc_va90)
@@ -172,14 +172,14 @@ length(slot(nc_sc_va90, "polygons"))
 
 
 ###################################################
-### code chunk number 22: combine_maptools.Rnw:326-328
+### code chunk number 22: combine_maptools.Rnw:330-332
 ###################################################
 t1 <- read.fwf(system.file("share/90mfips.txt", package="maptools"), skip=21,
  widths=c(4,4,4,4,2,6,2,3,3,1,7,5,3,51), colClasses = "character")
 
 
 ###################################################
-### code chunk number 23: combine_maptools.Rnw:330-336
+### code chunk number 23: combine_maptools.Rnw:334-340
 ###################################################
 t2 <- t1[1:2004,c(1,7,8,14)]
 t3 <- t2[complete.cases(t2),]
@@ -190,7 +190,7 @@ cnty2$FIPS <- paste(cnty2$V7, cnty2$V8, sep="")
 
 
 ###################################################
-### code chunk number 24: combine_maptools.Rnw:356-361
+### code chunk number 24: combine_maptools.Rnw:360-365
 ###################################################
 MA_FIPS <- cnty2$V1[match(FIPS, cnty2$FIPS)]
 MA <- ma1$V14[match(MA_FIPS, ma1$V1)]
@@ -200,7 +200,7 @@ ncscva_MA <- unionSpatialPolygons(nc_sc_va90a, nc_sc_va90a$MA_FIPS)
 
 
 ###################################################
-### code chunk number 25: combine_maptools.Rnw:367-374
+### code chunk number 25: combine_maptools.Rnw:371-378
 ###################################################
 .PngNo <- .PngNo + 1; file <- paste("Fig-bitmap-", .PngNo, ".pdf", sep="")
 pdf(file=file, width = 6.5, height = 5, pointsize = 12, bg = "white")
@@ -216,7 +216,7 @@ cat("\\includegraphics[width=0.95\\textwidth]{", file, "}\n\n", sep="")
 
 
 ###################################################
-### code chunk number 26: combine_maptools.Rnw:392-397
+### code chunk number 26: combine_maptools.Rnw:396-401
 ###################################################
 np <- sapply(slot(ncscva_MA, "polygons"), function(x) length(slot(x, "Polygons")))
 table(np)
@@ -226,7 +226,7 @@ data.frame(MA_fips, MA_name)[np > 1,]
 
 
 ###################################################
-### code chunk number 27: combine_maptools.Rnw:405-406
+### code chunk number 27: combine_maptools.Rnw:409-410
 ###################################################
 options("width"=owidth)
 
