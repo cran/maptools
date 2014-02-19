@@ -21,15 +21,16 @@ nearestPointOnLine = function(coordsLine, coordsPoint){
     nearest_points[1:2, which.min(nearest_points[3,])]  
 }
 
-snapPointsToLines <- function( points, lines, maxDist=NA, withAttrs=TRUE) {
+snapPointsToLines <- function( points, lines, maxDist=NA, withAttrs=TRUE, idField=NA) {
 
     require("rgeos")
 
-    if (is(points, 'SpatialPoints') && missing(withAttrs))
+    if (class(points) == "SpatialPoints" && missing(withAttrs))
         withAttrs = FALSE
+            
+    if (class(points) == "SpatialPoints" && withAttrs==TRUE)
+        stop("A SpatialPoints object has no attributes! Please set withAttrs as FALSE.")
 
-    if (is(points, 'SpatialPoints') && withAttrs==TRUE)
-        stop("A SpatialPoints object has no attributes! Set withAttrs as FALSE.")
 
     if (!is.na(maxDist)) {
         w = gWithinDistance(points, lines, dist=maxDist, byid=TRUE)
@@ -51,9 +52,9 @@ snapPointsToLines <- function( points, lines, maxDist=NA, withAttrs=TRUE) {
             nearestPointOnLine(coordsLines[[nearest_line_index[x]]][[1]], 
                 coordsPoints[x,]), FUN.VALUE=c(0,0))
 
-    # Recover lines' Ids (Ids and index differ if maxDist is given)
-    if (!is.na(maxDist)) nearest_line_id = as.numeric(rownames(d)[nearest_line_index])+1 
-    else nearest_line_id = nearest_line_index 
+    # Recover lines' Ids (If no id field has been specified, take the sp-lines id)
+    if (!is.na(idField)) nearest_line_id = lines@data[,idField][nearest_line_index] 
+    else nearest_line_id = sapply(slot(lines, "lines"), function(i) slot(i, "ID"))[nearest_line_index] 
 
     # Create data frame and sp points
     if (withAttrs) df = cbind(points@data, nearest_line_id) 
