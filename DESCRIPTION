@@ -1,7 +1,7 @@
 Package: maptools
-Version: 0.8-30
-Date: 2014-06-05
-Title: Tools for reading and handling spatial objects
+Version: 0.8-34
+Date: 2015-02-03
+Title: Tools for Reading and Handling Spatial Objects
 Authors@R: c(
 	person("Roger", "Bivand", role = c("cre", "aut"), email = "Roger.Bivand@nhh.no"),
 	person("Nicholas", "Lewin-Koh", role = "aut"),
@@ -24,6 +24,7 @@ Authors@R: c(
 	person("Sebastian", "Luque", role = "ctb"),
 	person("Don", "MacQueen", role = "ctb"),
 	person("Andrew", "Niccolai", role = "ctb"),
+	person("Edzer", "Pebesma", role = "ctb"),
 	person("Oscar", "Perpiñán Lamigueiro", role = "ctb"),
 	person("Tom", "Short", role = "ctb"),
 	person("Greg", "Snow", role = "ctb"),
@@ -39,7 +40,7 @@ Enhances: maps, gpclib, RArcInfo
 Description: Set of tools for manipulating and reading geographic data, in particular ESRI shapefiles; C code used from shapelib. It includes binary access to GSHHG shoreline files. The package also provides interface wrappers for exchanging spatial objects with packages such as PBSmapping, spatstat, maps, RArcInfo, Stata tmap, WinBUGS, Mondrian, and others.
 License: GPL (>= 2)
 URL: http://r-forge.r-project.org/projects/maptools/
-Packaged: 2014-06-05 18:02:47 UTC; rsb
+Packaged: 2015-02-03 13:58:46 UTC; rsb
 Author: Roger Bivand [cre, aut],
   Nicholas Lewin-Koh [aut],
   Edzer Pebesma [ctb],
@@ -61,6 +62,7 @@ Author: Roger Bivand [cre, aut],
   Sebastian Luque [ctb],
   Don MacQueen [ctb],
   Andrew Niccolai [ctb],
+  Edzer Pebesma [ctb],
   Oscar Perpiñán Lamigueiro [ctb],
   Tom Short [ctb],
   Greg Snow [ctb],
@@ -70,4 +72,4 @@ Author: Roger Bivand [cre, aut],
 Maintainer: Roger Bivand <Roger.Bivand@nhh.no>
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2014-06-05 21:54:33
+Date/Publication: 2015-02-03 20:59:28

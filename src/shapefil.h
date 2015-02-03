@@ -2,7 +2,7 @@
 #define _SHAPEFILE_H_INCLUDED
 
 /******************************************************************************
- * $Id: shapefil.h 259 2013-03-30 12:53:40Z rsbivand $
+ * $Id: shapefil.h 290 2015-02-03 13:57:30Z rsbivand $
  *
  * Project:  Shapelib
  * Purpose:  Primary include file for Shapelib.
@@ -209,12 +209,12 @@ extern "C" {
 /*      Macros for controlling CVSID and ensuring they don't appear     */
 /*      as unreferenced variables resulting in lots of warnings.        */
 /* -------------------------------------------------------------------- */
-//#ifndef DISABLE_CVSID
-//#  define SHP_CVSID(string)     static char cpl_cvsid[] = string; \
-//static char *cvsid_aw() { return( cvsid_aw() ? ((char *) NULL) : cpl_cvsid ); }
-//#else
-//#  define SHP_CVSID(string)
-//#endif
+/*#ifndef DISABLE_CVSID
+#  define SHP_CVSID(string)     static char cpl_cvsid[] = string; \
+static char *cvsid_aw() { return( cvsid_aw() ? ((char *) NULL) : cpl_cvsid ); }
+#else
+#  define SHP_CVSID(string)
+#endif*/
 
 /************************************************************************/
 /*                             SHP Support.                             */
