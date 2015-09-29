@@ -121,7 +121,7 @@ names(nc90)
 ###################################################
 ### code chunk number 15: combine_maptools.Rnw:175-176
 ###################################################
-try1 <- try(spChFIDs(nc90, paste(nc90$ST, nc90$CO, sep="")))
+try1 <- try(spChFIDs(nc90, paste(nc90$ST, nc90$CO, sep="")), silent=TRUE)
 
 
 ###################################################

@@ -4,7 +4,10 @@ import(sp)
 import(foreign)
 import(grid)
 importFrom(lattice, strip.custom, trellis.grobname, trellis.par.get, llines)
-importFrom(stats, smooth.spline)
+importFrom(stats, smooth.spline, runif, na.omit, median, quantile, predict)
+importFrom(utils, read.table, write.table, packageVersion, compareVersion, packageDescription)
+importFrom(graphics, image, polygon, par, text, rect, points, lines, box, strwidth, strheight)
+importFrom(grDevices, hsv, col2rgb, as.graphicsAnnot, xy.coords)
 import(methods)
 
 export(leglabs, dotsInPolys, symbolsInPolys, getinfo.shape, print.shapehead) 
@@ -38,13 +41,13 @@ exportMethods("crepuscule", "sunriset", "solarnoon", "solarpos")
 export(SpatialPolygons2PolySet, SpatialLines2PolySet, PolySet2SpatialPolygons, PolySet2SpatialLines, map2SpatialPolygons, map2SpatialLines, pruneMap)
 
 export(as.ppp.SpatialPoints, as.ppp.SpatialPointsDataFrame, as.SpatialPoints.ppp, as.SpatialPointsDataFrame.ppp, as.SpatialGridDataFrame.ppp)
-export(as.owin.SpatialGridDataFrame, as.owin.SpatialPixelsDataFrame, as.owin.SpatialPolygons, as.SpatialGridDataFrame.im, as.im.SpatialGridDataFrame)
+export(as.owin.SpatialGridDataFrame, as.owin.SpatialPixelsDataFrame, as.owin.SpatialPolygons, as.SpatialGridDataFrame.im, as.im.SpatialGridDataFrame, as.im.RasterLayer)
 
 export(as.psp.SpatialLinesDataFrame, as.psp.SpatialLines, as.psp.Lines, as.psp.Line, as.SpatialLines.psp)
 
 export(gpclibPermit, gpclibPermitStatus, rgeosStatus)
 
-export(unionSpatialPolygons, nowrapSpatialPolygons, nowrapRecenter, checkPolygonsHoles)
+export(unionSpatialPolygons, nowrapSpatialPolygons, nowrapRecenter, checkPolygonsHoles, nowrapSpatialLines)
 
 export(Rgshhs, getRgshhsMap)
 
