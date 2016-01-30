@@ -62,6 +62,9 @@ Files: inst/shapes/pointZ.* are a sample of points from a 3D point shapefile
 kindly contributed by Michael Toews to be used here for illustrative purposes;
 this sample is written out using writePointsShape(). 
 
+File: inst/shapes/Testing.kml is contributed by Kent Johnson, released 
+under GPL (>=2) as part of maptools.
+
 File: data/wrld_simpl.rda is a modified SpatialPolygonsDataFrame object
 generated from the TM_WORLD_BORDERS_SIMPL-0.2 shapefile downloaded from
 http://mappinghacks.com/data/TM_WORLD_BORDERS_SIMPL-0.2.zip with the 
