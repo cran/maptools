@@ -1,4 +1,4 @@
-/*	$Id: Rgshhs.c 290 2015-02-03 13:57:30Z rsbivand $
+/*	$Id: Rgshhs.c 321 2017-02-23 09:29:12Z rsbivand $
  *
  *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -70,7 +70,6 @@ static void swapb(void *result, int size)
 }
 
 
-SEXP Rgshhs(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 int getNpols(FILE *);
 

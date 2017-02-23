@@ -4,6 +4,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Read arc shape files into SpatialLinesDataFrame objects}
 \description{
+The use of this function is deprecated and it is not being maintained. Use \code{rgdal::readOGR()} or \code{sf::st_read()} instead - both of these read the coordinate reference system from the input file, while this deprecated function does not.
   The \code{readShapeLines} function reads data from an arc/line shapefile into a \code{SpatialLinesDataFrame} object; the shapefile may be of type polygon, but for just plotting for example coastlines, a SpatialLines object is sufficient. The \code{writeLinesShape} function writes data from a \code{SpatialLinesDataFrame} object to a shapefile. Note DBF file restrictions in \code{\link[foreign]{write.dbf}}.
 }
 \usage{
@@ -15,7 +16,7 @@ writeLinesShape(x, fn, factor2char = TRUE, max_nchar=254)
 \arguments{
   \item{fn}{shapefile layer name, when writing omitting the extensions *.shp, *.shx and *.dbf, which are added in the function}
   \item{proj4string}{Object of class \code{CRS}; holding a valid proj4 string}
-  \item{verbose}{default TRUE - report type of shapefile and number of shapes}
+  \item{verbose}{default FALSE - report type of shapefile and number of shapes}
   \item{repair}{default FALSE: some shapefiles provided by Geolytics Inc. have values of object sizes stored in the *.shx index file that are eight bytes too large, leading the function to try to read past the end of file. If repair=TRUE, an attempt is made to repair the internal values, permitting such files to be read.}
   \item{delete_null_obj}{if TRUE, null geometries will be removed together with their data.frame rows}
   \item{x}{a \code{SpatialLinesDataFrame} object}
