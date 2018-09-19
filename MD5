@@ -1,7 +1,7 @@
-c6ffe6f656ab6ccef3cd5fb8d9302ac5 *ChangeLog
-df64cdb73d5f461fccd0c0ab1341069b *DESCRIPTION
-56b67987bb18bed9af4e23c0214919a0 *NAMESPACE
-314c19e05ee2e211c804393734361cd9 *R/AAA.R
+55125a70d1a840e8deddd2fada76c309 *ChangeLog
+7d9f01f3caedb22d8eb135729f030499 *DESCRIPTION
+176aaf460a8e887b783aa46d0a46c857 *NAMESPACE
+87012a82b65cd36f323ed659103a3eea *R/AAA.R
 1399d0064b46e6e6c90600b1b64a5e19 *R/CCmaps.R
 d7210b92daad70dc7a3f7b10f676ccff *R/DP.R
 b52e6bfd6272c6c26bec32d86332d830 *R/GE_png.R
@@ -63,7 +63,7 @@ c6ffe6f656ab6ccef3cd5fb8d9302ac5 *inst/ChangeLog
 0d1e185186bdb70959760c0a63f7be4f *inst/changes
 b358c2168f0fb80129000e8a46943a49 *inst/doc/combine_maptools.R
 2e20fa712d38ce5c0670ee48a2459ee3 *inst/doc/combine_maptools.Rnw
-fc3ed25a28df42a8e07bc9549db2b9d2 *inst/doc/combine_maptools.pdf
+0e4ff2d82d9270b5b020783bd555a107 *inst/doc/combine_maptools.pdf
 ef247b6c335e75e48f81da7ef7554fa6 *inst/grids/simple.ag
 15c2101eb916ea116f400d560f73dd7c *inst/grids/test.ag
 17238eca9084a1321e2dc9a719ef8dd6 *inst/shapes/Testing.kml
