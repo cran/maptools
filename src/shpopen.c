@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: shpopen.c 259 2013-03-30 12:53:40Z rsbivand $
+ * $Id: shpopen.c 361 2019-10-03 12:20:24Z rsbivand $
  *
  * Project:  Shapelib
  * Purpose:  Implementation of core Shapefile read/write functions.
@@ -200,7 +200,7 @@
 #include <string.h>
 #include <stdio.h>
 
-//SHP_CVSID("$Id: shpopen.c 259 2013-03-30 12:53:40Z rsbivand $")
+//SHP_CVSID("$Id: shpopen.c 361 2019-10-03 12:20:24Z rsbivand $")
 
 typedef unsigned char uchar;
 
@@ -407,6 +407,7 @@ SHPOpen( const char * pszLayer, const char * pszAccess )
     uchar		*pabyBuf;
     int			i;
     double		dValue;
+    size_t out;
     
 /* -------------------------------------------------------------------- */
 /*      Ensure the access string is one of the legal ones.  We          */
@@ -504,7 +505,7 @@ SHPOpen( const char * pszLayer, const char * pszAccess )
 /*  Read the file size from the SHP file.				*/
 /* -------------------------------------------------------------------- */
     pabyBuf = (uchar *) malloc((size_t) (100));
-    fread( pabyBuf, 100, 1, psSHP->fpSHP );
+    out = fread( pabyBuf, 100, 1, psSHP->fpSHP );
 
     psSHP->nFileSize = (pabyBuf[24] * 256 * 256 * 256
 			+ pabyBuf[25] * 256 * 256

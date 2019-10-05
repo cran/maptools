@@ -2,6 +2,8 @@
 
 as.ppp.SpatialPoints = function(X) {
 	# require(spatstat)
+        if (!is.na(sp::is.projected(X)) && !sp::is.projected(X))
+          stop("Only projected coordinates may be converted to spatstat class objects")
 	if (!requireNamespace("spatstat", quietly = TRUE))
 		stop("package spatstat required for as.ppp.SpatialPoints")
         bb <- bbox(X)
@@ -16,6 +18,8 @@ setAs("SpatialPoints", "ppp", function(from) as.ppp.SpatialPoints(from))
 # Mike Sumner 20101011
 as.ppp.SpatialPointsDataFrame = function(X) {
 	# require(spatstat)
+        if (!is.na(sp::is.projected(X)) && !sp::is.projected(X))
+          stop("Only projected coordinates may be converted to spatstat class objects")
 	if (!requireNamespace("spatstat", quietly = TRUE))
 		stop("package spatstat required for as.ppp.SpatialPointsDataFrame")
 	bb <- bbox(X)
@@ -33,6 +37,8 @@ setAs("SpatialPointsDataFrame", "ppp", function(from) as.ppp.SpatialPointsDataFr
 
 as.owin.SpatialGridDataFrame = function(W, ..., fatal) {
 	# require(spatstat)
+        if (!is.na(sp::is.projected(W)) && !sp::is.projected(W))
+          stop("Only projected coordinates may be converted to spatstat class objects")
 	if (!requireNamespace("spatstat", quietly = TRUE))
 		stop("package spatstat required for as.owin.SpatialGridDataFrame")
 	# W = from
@@ -44,6 +50,8 @@ setAs("SpatialGridDataFrame", "owin", function(from) as.owin.SpatialGridDataFram
 
 as.owin.SpatialPixelsDataFrame = function(W, ..., fatal) {
 	# require(spatstat)
+        if (!is.na(sp::is.projected(W)) && !sp::is.projected(W))
+          stop("Only projected coordinates may be converted to spatstat class objects")
 	if (!requireNamespace("spatstat", quietly = TRUE))
 		stop("package spatstat required for as.owin.SpatialPixelsDataFrame")
 	# W = from
@@ -56,6 +64,8 @@ setAs("SpatialPixelsDataFrame", "owin", function(from) as.owin.SpatialPixelsData
 as.owin.SpatialPolygons = function(W, ..., fatal) {
 	# require(spatstat)
 	# W = from
+        if (!is.na(sp::is.projected(W)) && !sp::is.projected(W))
+          stop("Only projected coordinates may be converted to spatstat class objects")
 	if (!inherits(W, "SpatialPolygons")) 
 		stop("W must be a SpatialPolygons object")
 	res <- .SP2owin(W)
@@ -72,7 +82,7 @@ owin2Polygons <- function(x, id="1") {
   stopifnot(spatstat::is.owin(x))
   x <- spatstat::as.polygonal(x)
   closering <- function(df) { df[c(seq(nrow(df)), 1), ] }
-  if (x$type == "polygonal") {
+#  if (x$type == "polygonal") {
 #      if (packageVersion("spatstat") >= "1.50.0") {
         if (requireNamespace("spatstat.utils", quietly = TRUE)) {
           pieces <- lapply(x$bdry,
@@ -88,10 +98,10 @@ owin2Polygons <- function(x, id="1") {
 #                     Polygon(coords=closering(cbind(p$x,p$y)),
 #                             hole=spatstat::is.hole.xypolygon(p))  })
 #     }
-  } else if (x$type == "rectangle") {
-      rectCrds <- cbind(x$xrange[c(1,1,2,2,1)], x$yrange[c(1,2,2,1,1)])
-      pieces <- list(Polygon(rectCrds, hole=FALSE))
-  } else stop("owin2Polygons: unknown type:", x$type)
+#  } else if (x$type == "rectangle") {
+#      rectCrds <- cbind(x$xrange[c(1,1,2,2,1)], x$yrange[c(1,2,2,1,1)])
+#      pieces <- list(Polygon(rectCrds, hole=FALSE))
+#  } else stop("owin2Polygons: unknown type:", x$type)
   z <- Polygons(pieces, id)
   return(z)
 }
@@ -172,6 +182,8 @@ setAs("Lines", "psp", function(from) as.psp.Lines(from))
 as.psp.SpatialLines <- function(from, ..., window=NULL, marks=NULL,
                                  characterMarks=FALSE, fatal) {
 	# require(spatstat)
+        if (!is.na(sp::is.projected(from)) && !sp::is.projected(from))
+          stop("Only projected coordinates may be converted to spatstat class objects")
 	if (!requireNamespace("spatstat", quietly = TRUE))
 		stop("package spatstat required for as.owin.SpatialPixelsDataFrame")
   if(is.null(window)) {
@@ -202,6 +214,8 @@ setAs("SpatialLines", "psp", function(from) as.psp.SpatialLines(from))
 
 as.psp.SpatialLinesDataFrame <- function(from, ..., window=NULL, marks=NULL, fatal) {
 	# require(spatstat)
+        if (!is.na(sp::is.projected(from)) && !sp::is.projected(from))
+          stop("Only projected coordinates may be converted to spatstat class objects")
 	if (!requireNamespace("spatstat", quietly = TRUE))
 		stop("package spatstat required for as.owin.SpatialPixelsDataFrame")
   y <- as(from, "SpatialLines")
