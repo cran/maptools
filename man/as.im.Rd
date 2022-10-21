@@ -68,19 +68,24 @@ image(mg_dist, axes=TRUE)
 if (run) {
 ## Convert to im format and plot it
 mg_im <- as(mg_dist, "im")
-plot(mg_im)
+\dontrun{
+ plot(mg_im)
+}
 }
 if (run) {
 ## Convert back to SpatialGridDataFrame and plot it again
 mg2 <- as.SpatialGridDataFrame.im(mg_im)
-image(mg2, axes=TRUE)
+\dontrun{
+ image(mg2, axes=TRUE)
 }
+}
+\dontrun{
 run <- run && require(raster, quietly=TRUE)
 if (run) {
 ## Convert SpatialGridDataFrame -> RasterLayer -> im and plot it
 r <- as(mg2, "RasterLayer")
 r_im <- as.im.RasterLayer(r)
-plot(r_im)
+ plot(r_im)
 }
 if (run) {
 rr <- raster(nrow=2, ncol=3)
@@ -95,13 +100,12 @@ print(levels(rrr))
 }
 if (run) {
 iii <- as.im.RasterLayer(rrr)
-plot(iii)
+ plot(iii)
 }
 if (run) {
 iv <- as.im.RasterLayer(rrr, factor.col.name = "name")
-plot(iv)
+ plot(iv)
 }
-if (run) {
 }
 }
 \keyword{spatial}
