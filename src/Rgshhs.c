@@ -1,4 +1,4 @@
-/*	$Id: Rgshhs.c 321 2017-02-23 09:29:12Z rsbivand $
+/*	$Id: Rgshhs.c 411 2022-12-12 10:14:00Z rsbivand $
  *
  *	Copyright (c) 1996-2011 by P. Wessel and W. H. F. Smith
  *	See COPYING file for copying and redistribution conditions.
@@ -97,7 +97,7 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 
 	fp = fopen (CHAR(STRING_ELT(fn, 0)), "rb");
 	if (fp == NULL ) {
-		sprintf(msg, "Could not find file %s", CHAR(STRING_ELT(fn, 0)));
+		snprintf(msg, sizeof(msg), "Could not find file %s", CHAR(STRING_ELT(fn, 0)));
 		error(msg);
 
 	}
@@ -334,7 +334,7 @@ SEXP Rgshhs(SEXP fn, SEXP mode, SEXP dolim, SEXP lim, SEXP level, SEXP minarea)
 			    if (fread ((void *)&p, 
 				(size_t) sizeof(struct POINT), 
 				(size_t) 1, fp) != 1) {
-					sprintf (msg, 
+					snprintf (msg, sizeof(msg),
 			"Error reading file %s for %s %d, point %d.\n", 
 			CHAR(STRING_ELT(fn, 0)), name[line], 
 			INTEGER_POINTER(VECTOR_ELT(res, 0))[j], k);

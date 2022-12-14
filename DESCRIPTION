@@ -1,6 +1,6 @@
 Package: maptools
-Version: 1.1-5
-Date: 2022-10-05
+Version: 1.1-6
+Date: 2022-12-12
 Title: Tools for Handling Spatial Objects
 Authors@R: c(
 	person("Roger", "Bivand", role = c("cre", "aut"), email = "Roger.Bivand@nhh.no", comment=c(ORCID="0000-0003-2392-6140")),
@@ -50,7 +50,7 @@ URL: http://maptools.r-forge.r-project.org/,
         https://r-forge.r-project.org/projects/maptools/
 RoxygenNote: 6.1.1
 NeedsCompilation: yes
-Packaged: 2022-10-21 09:01:31 UTC; rsb
+Packaged: 2022-12-12 13:51:14 UTC; rsb
 Author: Roger Bivand [cre, aut] (<https://orcid.org/0000-0003-2392-6140>),
   Nicholas Lewin-Koh [aut],
   Edzer Pebesma [ctb],
@@ -86,4 +86,4 @@ Author: Roger Bivand [cre, aut] (<https://orcid.org/0000-0003-2392-6140>),
   Rolf Turner [ctb]
 Maintainer: Roger Bivand <Roger.Bivand@nhh.no>
 Repository: CRAN
-Date/Publication: 2022-10-21 12:52:36 UTC
+Date/Publication: 2022-12-14 23:30:03 UTC
