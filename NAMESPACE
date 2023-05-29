@@ -120,8 +120,6 @@ if(getRversion() >= "3.6.0") {
 }
 
 export(
- gpclibPermit, # bamlss R2BayesX surveillance
- gpclibPermitStatus,
  rgeosStatus
 )
 
@@ -137,10 +135,6 @@ export(
  thinnedSpatialPoly
 )
 
-export(
- Rgshhs,
- getRgshhsMap
-)
 
 export(
  CCmaps
@@ -152,9 +146,9 @@ exportMethods(
  spRbind # APfun ecospat iSDM (new 2212 micromapST) track2KBA uavRmp
 )
 
-exportMethods(
- elide # usmap https://github.com/pdil/usmap/issues/57
-)
+#exportMethods( # in sp
+# elide # usmap https://github.com/pdil/usmap/issues/57
+#)
 
 export(
  GE_SpatialGrid,

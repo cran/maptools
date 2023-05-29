@@ -1,6 +1,14 @@
-# Please note that **maptools** will be retired by the end of 2023, plan transition at your earliest convenience; some functionality will be moved to **sp**.
+# Please note that **maptools** will be retired during October 2023, plan transition at your earliest convenience (see https://r-spatial.org/r/2023/05/15/evolution4.html and earlier blogs for guidance); some functionality will be moved to **sp**.
 
-# Version 1.1-6 (development, rev. 411-)
+# Version 1.1-7 (development, rev. 413-)
+
+* remove gpclib and Rgshhs
+
+* Make retirement in October 2023 explicit, move package start-up messages to load from attach
+
+* `elide()` deprecated and moved to `sp`
+
+# Version 1.1-6 (2022-12-14, rev. 411-413)
 
 * CRAN `sprintf()` warnings
 

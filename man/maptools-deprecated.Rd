@@ -23,6 +23,7 @@
 \alias{sp.lineLabel,Lines-method}
 \alias{sp.lineLabel,SpatialLines-method}
 \alias{label,SpatialLines-method}
+
 \title{Deprecated functions and methods}
 \description{Cumulative deprecated functions and methods from maptools prior to package retirement/archiving during 2023.}
 \usage{
@@ -75,6 +76,7 @@ panel.pointLabel(x, y = NULL,
                               fill='transparent',
                               ...)
 sp.pointLabel(object, labels, ...)
+#elide(obj, ...)
 
 }
 \arguments{
@@ -96,8 +98,6 @@ sp.pointLabel(object, labels, ...)
           progress.}
   \item{doPlot}{ logical; if \code{TRUE}, the labels are plotted on the
           existing graph with \code{text}.}
-  \item{...}{ arguments passed along to \code{text} to specify
-          labeling parameters such as \code{col}. }
   \item{fn}{shapefile layer name, when writing omitting the extensions *.shp, *.shx and *.dbf, which are added in the function}
   \item{proj4string}{Object of class \code{CRS}; holding a valid proj4 string}
   \item{verbose}{default FALSE - report type of shapefile and number of shapes}
@@ -133,6 +133,17 @@ null geometries inserted by ABS (Polygons only)}
     the text must be placed.}
   \item{lty, lwd, col.line}{graphical parameters for the line. See gpar for details.}
   \item{identifier}{A character string to identify the grob to be created.}
+  \item{...}{other arguments:
+  \describe{
+    \item{bb}{if NULL, uses bounding box of object, otherwise the given bounding box}
+    \item{shift}{values to shift the coordinates of the input object; this is made ineffective by the scale argument}
+    \item{reflect}{reverse coordinate axes}
+    \item{scale}{if NULL, coordinates not scaled; if TRUE, the longer dimension is scaled to lie within [0,1] and aspect maintained; if a scalar, the output range of [0,1] is multiplied by scale}
+    \item{flip}{translate coordinates on the main diagonal}
+    \item{rotate}{default 0, rotate angle degrees clockwise around center}
+    \item{center}{default NULL, if not NULL, the rotation center, numeric of length two}
+    \item{unitsq}{logical, default FALSE, if TRUE and scale TRUE, impose unit square bounding box (currently only points)}
+}}
 
 }
 \keyword{ package }
