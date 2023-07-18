@@ -1,6 +1,14 @@
 # Please note that **maptools** will be retired during October 2023, plan transition at your earliest convenience (see https://r-spatial.org/r/2023/05/15/evolution4.html and earlier blogs for guidance); some functionality will be moved to **sp**.
 
-# Version 1.1-7 (development, rev. 413-)
+# Version 1.1-8 (development, rev. 421-)
+
+* Ensure that only strings are compared with package versions
+
+* Deprecate functions handling KML, handed off to https://github.com/rsbivand/spkml and seeking new maintainer
+
+* Deprecate methods moved to new `suntools` package (1.1-9 will stop exporting them); until then use `library("maptools", exclude=c("crepuscule", "solarnoon", "solarpos", "sunriset"))` to prefer `suntools` if loading `maptools` after `suntools`
+
+# Version 1.1-7 (2023-05-29, rev. 414-420)
 
 * remove gpclib and Rgshhs
 
